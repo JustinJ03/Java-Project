@@ -1,50 +1,40 @@
-# SUGGESTION (AI-generated content). Rename to content.txt; edit freely.
-# Each screen is a block: first line = title, following lines = body.
-# Separate blocks with a line containing only three dashes:  ---
-What is SDG 4?
-Sustainable Development Goal 4 is "Quality Education". It aims to ensure inclusive
-and equitable quality education and promote lifelong learning opportunities for all.
----
-Why Education Matters
-Education is a powerful driver of development. It lifts people out of poverty,
-improves health, promotes gender equality, and fuels economic growth.
----
-The 2030 Agenda
-The SDGs were adopted by all United Nations member states in 2015 as part of the
-2030 Agenda for Sustainable Development. There are 17 goals in total.
----
-Inclusive Education
-Inclusive education means every learner - regardless of ability, gender, or
-background - has access to learning in a safe and supportive environment.
----
-Equitable Access
-Equity in education means removing barriers so that vulnerable and marginalised
-groups can attend and complete quality schooling.
----
-Lifelong Learning
-SDG 4 is not just about children. It promotes opportunities to keep learning new
-skills throughout life, including technical and vocational training.
----
-Literacy and Numeracy
-Foundational literacy and numeracy skills are core targets of SDG 4, enabling
-people to participate fully in society and the economy.
----
-Quality Teachers
-A sufficient supply of qualified, well-trained teachers is essential. SDG 4
-includes targets to expand teacher training, especially in developing regions.
----
-Safe Learning Environments
-SDG 4 calls for education facilities that are child-, disability-, and
-gender-sensitive, and that provide safe, non-violent, inclusive spaces.
----
-Barriers to Education
-Poverty, conflict, distance, and lack of resources keep millions of children out
-of school. Tackling these barriers is central to achieving SDG 4.
----
-Measuring Progress
-Progress toward SDG 4 is tracked through indicators such as literacy rates,
-school completion rates, and access to trained teachers.
----
-What You Can Do
-Support quality education by valuing learning, helping others learn, volunteering,
-and raising awareness of education as a right for everyone.
+Lesson 1: Understanding SDG 4 – Quality Education
+SDG 4 is about ensuring inclusive and equitable quality education and promoting lifelong learning opportunities for all. Education is more than attending school; it means effective teaching, safe environments, and opportunities that nurture creativity and critical thinking. 
+Key Fact: Education is a fundamental human right recognized by the United Nations.
+
+Lesson 2: Why Quality Education Matters
+Education empowers individuals to break the cycle of poverty, improve health, and contribute positively to their communities. It builds knowledge, confidence, and skills needed for employment and innovation. When education is inclusive, societies become more stable and prosperous.
+Key Fact: Each additional year of schooling can increase a person’s income by up to 10 percent.
+
+Lesson 3: Barriers to Education
+Many children and young people cannot access or complete schooling. Barriers include poverty, child labour, gender inequality, conflict and displacement, disability without adequate support, and schools that are too far away or unsafe. Removing these barriers is essential to achieving SDG 4. 
+Key Fact: UNICEF estimates that 244 million children and youth are out of school worldwide.
+
+Lesson 4: The Role of Teachers
+Teachers are the heart of education. Skilled and motivated educators create inclusive classrooms and inspire students to learn. Investing in teacher training, fair pay, and professional development ensures that every learner receives quality instruction. 
+Key Fact: SDG 4 aims to substantially increase the supply of qualified teachers, especially in developing countries.
+
+Lesson 5: Technology and Digital Learning
+Digital tools make education more accessible and interactive. Online platforms, educational apps, and virtual classrooms allow students to learn anytime and anywhere. Technology also helps bridge gaps for learners in remote areas and those with disabilities. 
+Key Fact: During the COVID19 pandemic, elearning platforms reached over one billion users globally.
+
+
+Lesson 6: Gender Equality in Education
+Gender inequality remains a major barrier to education. In some regions, girls face cultural restrictions, early marriage, or unsafe school environments. Promoting gender equality ensures that both girls and boys have equal opportunities to learn and succeed. 
+Key Fact: Educated women are more likely to participate in decisionmaking and improve community wellbeing.
+
+Lesson 7: Inclusive Education for Learners with Disabilities
+Inclusive education means adapting teaching methods, materials, and environments so that all learners, including those with disabilities, can participate fully. Accessibility features such as ramps, assistive technology, and supportive teachers make learning possible for everyone. 
+Key Fact: SDG 4 emphasizes equal access to education for persons with disabilities and those in vulnerable situations.
+
+Lesson 8: Lifelong Learning Opportunities
+Learning does not end after school. Lifelong learning helps people adapt to changes in technology, work, and society. It includes vocational training, adult education, and community workshops that keep skills relevant throughout life. 
+Key Fact: Continuous learning supports innovation and sustainable development.
+
+Lesson 9: Global Partnerships for Education
+Achieving SDG 4 requires collaboration among governments, NGOs, educators, and communities. Partnerships help fund schools, train teachers, and share best practices across countries. Working together ensures that no learner is left behind. 
+Key Fact: The Global Partnership for Education supports more than 80 countries in improving access and quality of education.
+
+Lesson 10: The Future of Education
+The future of education focuses on creativity, critical thinking, and sustainability. Schools must prepare students to solve global challenges such as climate change and inequality. Innovative teaching methods and technology will make learning more personalized and inclusive. 
+Key Fact: By 2030, SDG 4 aims for universal access to free, equitable, and quality primary and secondary education for all children.
