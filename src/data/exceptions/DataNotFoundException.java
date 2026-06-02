@@ -1,8 +1,15 @@
-// Starter file. Implement the // TODO blocks below.
 package data.exceptions;
 
-/** Thrown when stored data cannot be located or read. */
+/**
+ * Thrown by DataManager when saved data cannot be located or read from disk.
+ *
+ * Member 4 -- this file is complete.
+ */
 public class DataNotFoundException extends Exception {
-    public DataNotFoundException(String message) { super(message); }
-    public DataNotFoundException(String message, Throwable cause) { super(message, cause); }
+    public DataNotFoundException(String message) {
+        super(message);
+    }
+    public DataNotFoundException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

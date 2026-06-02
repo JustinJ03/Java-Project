@@ -1,50 +1,177 @@
-// Starter file. Implement the // TODO blocks below.
 package quiz;
 
 import app.AppContext;
 import app.AppModule;
+import data.exceptions.ContentLoadException;
+import data.exceptions.InvalidScoreException;
 import interfaces.IQuiz;
-import javax.swing.JComponent;
+import javax.swing.*;
+import java.awt.*;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-/** Quiz flow: loads questions, presents them, scores, persists, motivates. */
+/**
+ * TASK: Member 2 - Quiz Module
+ *
+ * PURPOSE:
+ *   Loads 20+ questions from questions.txt, presents them one at a time,
+ *   calculates the player's score, shows a motivational message, and
+ *   saves the result via DataManager.
+ *
+ * EXTENDS: AppModule  -- gives you getName(), onShow(), placeholder() helper.
+ * IMPLEMENTS: IQuiz   -- loadQuestions(), scorePercent(), motivationalMessage().
+ *
+ * OOP CONCEPTS TO DEMONSTRATE:
+ *   - Inheritance     : extends AppModule
+ *   - Overriding      : getView(), onShow(), and all IQuiz methods
+ *   - Polymorphism    : the questions list holds Question objects; checkAnswer()
+ *                       and render() dispatch to MCQQuestion or TrueFalseQuestion
+ *                       at runtime without the QuizModule knowing the concrete type
+ *   - Exception handling : InvalidScoreException, ContentLoadException
+ */
 public class QuizModule extends AppModule implements IQuiz {
+
+    // === FIELDS ===
     private final List<Question> questions = new ArrayList<>();
-    private int correctCount = 0;
+    private int correctCount = 0; // tracks how many answers were correct
 
-    public QuizModule(AppContext ctx) { super(ctx, "Quiz"); }
+    // === CONSTRUCTOR ===
+    public QuizModule(AppContext ctx) {
+        super(ctx, "Quiz");
+    }
 
+    // =========================================================
+    // METHOD: loadQuestions()  [IQuiz]
+    // =========================================================
+    /**
+     * Parses questions.txt and populates the questions list.
+     *
+     * FILE FORMAT (each line is one question):
+     *   MCQ|prompt|opt1;opt2;opt3;opt4|correctIndex
+     *   TF|prompt||true          (or false)
+     *   Lines starting with '#' are comments -- skip them.
+     *
+     * HOW TO IMPLEMENT:
+     *   STEP 1: Open "resources/quiz/questions.txt" with BufferedReader.
+     *
+     *   STEP 2: For each non-blank, non-comment line:
+     *             String[] parts = line.split("\\|");
+     *             String type = parts[0].trim();
+     *
+     *   STEP 3: If type.equals("MCQ"):
+     *             String prompt   = parts[1].trim();
+     *             List<String> opts = Arrays.asList(parts[2].split(";"));
+     *             int correctIdx  = Integer.parseInt(parts[3].trim());
+     *             questions.add(new MCQQuestion(prompt, opts, correctIdx));
+     *
+     *   STEP 4: If type.equals("TF"):
+     *             String prompt  = parts[1].trim();
+     *             boolean answer = Boolean.parseBoolean(parts[3].trim());
+     *             questions.add(new TrueFalseQuestion(prompt, answer));
+     *
+     *   STEP 5: Use try-with-resources. On IOException throw:
+     *             new ContentLoadException("Cannot load questions", e);
+     *
+     *   EXPECTED: questions.size() >= 20.
+     *
+     * OOP NOTE: Overrides IQuiz.loadQuestions(). The list is typed as
+     *           List<Question> -- polymorphism lets you add both MCQ and TF.
+     */
     @Override
     public List<Question> loadQuestions() {
-        // TODO(Member 2): read resources/quiz/questions.txt (skip lines starting with '#'),
-        //   split each line on '|', build MCQQuestion (TYPE=MCQ; options split on ';';
-        //   last field = correct index) or TrueFalseQuestion (TYPE=TF; last field = true/false),
-        //   add to 'questions', and return it.
+        // TODO(Member 2): implement using the steps above.
         return questions;
     }
 
+    // =========================================================
+    // METHOD: scorePercent()  [IQuiz]
+    // =========================================================
+    /**
+     * Returns the player's score as a percentage.
+     *
+     * HOW TO IMPLEMENT:
+     *   return questions.isEmpty() ? 0 : correctCount * 100 / questions.size();
+     *
+     * BOUNDARY: if questions is empty, return 0 to avoid division by zero.
+     */
     @Override
     public int scorePercent() {
-        // TODO(Member 2): return questions.isEmpty() ? 0 : correctCount * 100 / questions.size().
+        // TODO(Member 2): implement using the formula above.
         return 0;
     }
 
+    // =========================================================
+    // METHOD: motivationalMessage(int percent)  [IQuiz]
+    // =========================================================
+    /**
+     * Maps a score percentage to the required motivational message.
+     *
+     * HOW TO IMPLEMENT (use if-else if chain -- EXACT strings required):
+     *
+     *   if      (percent >= 80) return "Outstanding!";
+     *   else if (percent >= 60) return "That's good!";
+     *   else if (percent >= 40) return "Good try!";
+     *   else if (percent >= 20) return "You can do better!";
+     *   else                    return "Don't give up!";
+     *
+     * IMPORTANT: The TestSuite checks ALL 10 boundary values (0, 19, 20,
+     *            39, 40, 59, 60, 79, 80, 100). Get the >= conditions right.
+     */
     @Override
     public String motivationalMessage(int percent) {
-        // TODO(Member 2): map percent to the EXACT scale:
-        //   80-100 -> "Outstanding!"      60-79 -> "That's good!"
-        //   40-59  -> "Good try!"         20-39 -> "You can do better!"
-        //   0-19   -> "Don't give up!"
+        // TODO(Member 2): implement the if-else chain above.
         return "";
     }
 
+    // =========================================================
+    // METHOD: getView()  [OVERRIDE -- required by IModule]
+    // =========================================================
+    /**
+     * Builds and returns the Quiz Module's Swing panel.
+     *
+     * HOW TO IMPLEMENT:
+     *   STEP 1: Load questions if not done: if (questions.isEmpty()) loadQuestions();
+     *
+     *   STEP 2: Create a main JPanel to hold the current question's render() output.
+     *           Display questions[0].render() initially.
+     *
+     *   STEP 3: Add a "Submit" or "Next" button.
+     *           On click:
+     *             a. Read the player's selected answer (from the rendered component).
+     *             b. Call questions.get(currentIndex).checkAnswer(answer).
+     *             c. If correct: correctCount++;
+     *             d. Advance to the next question. If no more questions:
+     *                  - Show score: scorePercent() + "%" + motivationalMessage(scorePercent())
+     *                  - Save score: try { ctx.storage().saveScore("Player", scorePercent()); }
+     *                                catch (InvalidScoreException e) { e.printStackTrace(); }
+     *                  - Optionally trigger gamification: ctx can be used to access storage.
+     *
+     *   STEP 4: Return the main panel.
+     *
+     * OOP NOTE: Overrides AppModule.getView() -- overriding + polymorphism via IModule.
+     */
     @Override
     public JComponent getView() {
-        // TODO(Member 2): build the quiz UI - show one question's render() at a time, advance
-        //   on answer, increment correctCount when checkAnswer() is true, then display
-        //   scorePercent() + motivationalMessage(scorePercent()) and call
-        //   ctx.storage().saveScore("player", scorePercent()) inside try-catch.
-        return placeholder("quiz: load 20+ questions, score, motivational message, save");
+        // TODO(Member 2): implement using the steps above.
+        return placeholder("Quiz: implement getView() -- see comments above.");
+    }
+
+    // =========================================================
+    // METHOD: onShow()  [OVERRIDE -- optional]
+    // =========================================================
+    /**
+     * Reset the quiz state when the user navigates back to this module.
+     *
+     * HOW TO IMPLEMENT:
+     *   correctCount = 0;
+     *   questions.clear(); // reload fresh next time getView() is called
+     *
+     * OOP NOTE: Overrides AppModule.onShow().
+     */
+    @Override
+    public void onShow() {
+        // TODO(Member 2): optionally reset correctCount and clear questions for a fresh quiz.
     }
 }

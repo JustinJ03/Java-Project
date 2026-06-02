@@ -1,7 +1,12 @@
-// Starter file. Implement the // TODO blocks below.
 package data.exceptions;
 
-/** Thrown when a score is outside the valid 0..100 range. */
+/**
+ * Thrown by DataManager when a score value is outside the valid 0-100 range.
+ *
+ * Member 4 -- this file is complete.
+ */
 public class InvalidScoreException extends Exception {
-    public InvalidScoreException(String message) { super(message); }
+    public InvalidScoreException(String message) {
+        super(message);
+    }
 }

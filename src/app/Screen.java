@@ -1,4 +1,3 @@
-// Starter file. Implement the // TODO blocks below.
 package app;
 
 import javax.swing.*;

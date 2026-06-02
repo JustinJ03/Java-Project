@@ -1,16 +1,65 @@
-// Starter file. Implement the // TODO blocks below.
 package quiz;
 
 import javax.swing.JComponent;
 
-/** Abstract question. Subclasses override checkAnswer() and render() (polymorphism). */
+/**
+ * TASK: Member 2 - Abstract Question Base Class
+ *
+ * PURPOSE:
+ *   Abstract superclass for all question types (MCQ, True/False).
+ *   Defines the common contract: every question has a prompt, can check
+ *   an answer, and can render itself as a Swing component.
+ *
+ * OOP CONCEPTS TO DEMONSTRATE:
+ *   - Abstraction   : abstract class with abstract methods
+ *   - Inheritance   : MCQQuestion and TrueFalseQuestion both extend this
+ *   - Polymorphism  : QuizModule loops over List<Question>, calling
+ *                     checkAnswer() and render() on each -- the JVM
+ *                     dispatches to the correct subclass at runtime.
+ *
+ * THIS FILE IS COMPLETE -- both abstract methods are declared here.
+ * Implement them in MCQQuestion and TrueFalseQuestion.
+ */
 public abstract class Question {
-    protected final String prompt;
 
-    protected Question(String prompt) { this.prompt = prompt; }
+    // === FIELD ===
+    protected final String prompt; // the question text shown to the player
 
+    // === CONSTRUCTOR ===
+    protected Question(String prompt) {
+        this.prompt = prompt;
+    }
+
+    // === GETTER ===
     public String getPrompt() { return prompt; }
 
+    // =========================================================
+    // ABSTRACT METHOD: checkAnswer(String response)
+    // =========================================================
+    /**
+     * Returns true if the player's response is correct.
+     *
+     * Each subclass decides what "correct" means:
+     *   - MCQQuestion  : response matches the option text at correctIndex
+     *   - TrueFalseQuestion : response is "true" or "false" (case-insensitive)
+     *
+     * OOP NOTE: Overriding this method in each subclass demonstrates
+     *           method overriding and runtime polymorphism.
+     */
     public abstract boolean checkAnswer(String response);
+
+    // =========================================================
+    // ABSTRACT METHOD: render()
+    // =========================================================
+    /**
+     * Builds and returns a Swing panel representing this question's UI.
+     *
+     * Each subclass renders itself differently:
+     *   - MCQQuestion      : prompt + radio buttons for each option
+     *   - TrueFalseQuestion: prompt + True and False buttons
+     *
+     * OOP NOTE: Another example of overriding. QuizModule calls render()
+     *           without knowing which subclass it is -- polymorphism.
+     */
     public abstract JComponent render();
 }
