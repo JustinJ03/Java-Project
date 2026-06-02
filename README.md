@@ -1,37 +1,80 @@
-# EduSDG – SDG Quality Education Java Application
+# EduSDG – SDG 4 Quality Education Java Application
 
 ## Overview
-EduSDG is a Java desktop application built around SDG 4 – Quality Education.
-It delivers an interactive learning experience through three integrated modules:
-a Learning Module with 10+ educational screens, a Quiz Module with 20+ questions
-and motivational scoring, and a Gamification Module with badges, points, and a leaderboard.
+EduSDG is a Java Swing desktop application centred on **SDG 4 – Quality Education**.
+It provides three integrated modules: a Learning Module with 10+ educational screens,
+a Quiz Module with 20+ questions and motivational scoring, and a Gamification Module
+with badges, points, and a leaderboard. Scores are stored in a text file with no hardcoding.
 
-## How to Run
-Compile:
-  javac -d out src/**/*.java
+## How to Build and Run
 
-Run:
-  java -cp out main.Main
+**Compile:**
+```
+build.bat
+```
 
-Or via JAR:
-  java -jar EduSDG.jar
+**Run:**
+```
+run.bat
+```
+
+Or manually from the project root:
+```
+javac -d out src\main\Main.java src\app\*.java src\interfaces\*.java src\learning\*.java src\quiz\*.java src\gamification\*.java src\data\*.java src\data\exceptions\*.java
+java -cp out main.Main
+```
+
+> Always run from the project root directory (the folder containing `src/` and `resources/`).
+
+## Project Structure
+```
+src/
+  app/          Shared backbone: Theme, Screen, AppModule, Navigator, AppContext, HomeScreen
+  interfaces/   IModule, IQuiz, IGamification, IDataStorage
+  main/         Main.java (entry point)
+  learning/     LearningModule, ContentPage              (Member 1)
+  quiz/         QuizModule, Question, MCQQuestion,
+                TrueFalseQuestion                        (Member 2)
+  gamification/ GamificationModule, Badge                (Member 3)
+  data/         DataManager, UserProfile, exceptions/    (Member 4)
+resources/
+  learning/content.txt     SDG 4 educational screen content
+  quiz/questions.txt        Quiz question bank (MCQ + True/False)
+tests/
+  TestSuite.java            Automated structural and logic tests
+  DebugHelper.java          Environment diagnostics tool
+  ManualTests.java          Basic logic checks
+data/
+  scores.txt                Created at runtime when a quiz is completed
+```
 
 ## Team
-| Member   | Role                         | Classes                       | Interface     |
-|----------|------------------------------|-------------------------------|---------------|
-| Member 1 | Core Architecture & Learning | LearningModule, ContentPage   | IModule       |
-| Member 2 | Quiz Module                  | QuizModule, Question          | IQuiz         |
-| Member 3 | Gamification Module          | GamificationModule, Badge     | IGamification |
-| Member 4 | Data & Exception Handling    | DataManager, UserProfile      | IDataStorage  |
+
+| Member   | Role                         | Classes                                             | Interface     |
+|----------|------------------------------|-----------------------------------------------------|---------------|
+| Member 1 | Core Architecture & Learning | LearningModule, ContentPage                         | IModule       |
+| Member 2 | Quiz Module                  | QuizModule, Question, MCQQuestion, TrueFalseQuestion | IQuiz        |
+| Member 3 | Gamification Module          | GamificationModule, Badge                           | IGamification |
+| Member 4 | Data & Exception Handling    | DataManager, UserProfile                            | IDataStorage  |
 
 ## Score Scale
-  80–100% : Outstanding!
-  60–79%  : That's good!
-  40–59%  : Good try!
-  20–39%  : You can do better!
-   0–19%  : Don't give up!
+```
+80 – 100% : Outstanding!
+60 –  79% : That's good!
+40 –  59% : Good try!
+20 –  39% : You can do better!
+ 0 –  19% : Don't give up!
+```
+
+## Running the Tests
+After compiling, run the test suite to check your implementation:
+```
+javac -cp out -d out tests\TestSuite.java tests\DebugHelper.java tests\ManualTests.java
+java -cp out tests.TestSuite
+java -cp out tests.DebugHelper
+```
+`[STRUCTURAL]` tests pass immediately. `[LOGIC]` tests turn green as each member implements their TODOs.
 
 ## Requirements
-- Java 11 or higher
+- Java 11 or higher (tested on JDK 25)
 - No external libraries required
-- Run from command line as shown above
