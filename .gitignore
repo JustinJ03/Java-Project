@@ -17,7 +17,7 @@ credentials*
 # --- Build & runtime output ---
 out/
 *.class
-data/
+/data/
 derby.log
 *.log
 
