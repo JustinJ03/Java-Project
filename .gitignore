@@ -1,0 +1,30 @@
+# --- AI usage traces (do not share) ---
+.claude/
+docs/superpowers/
+CLAUDE.md
+AGENTS.md
+memory/
+*.ai.md
+
+# --- Sensitive info ---
+.env
+*.env
+*.key
+*.pem
+secrets*
+credentials*
+
+# --- Build & runtime output ---
+out/
+*.class
+/data/
+derby.log
+*.log
+
+# --- IDE / OS ---
+.idea/
+.vscode/
+nbproject/private/
+*.iml
+.DS_Store
+Thumbs.db
