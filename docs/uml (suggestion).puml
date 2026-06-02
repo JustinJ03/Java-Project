@@ -1,0 +1,68 @@
+@startuml EduSDG
+' SUGGESTION (AI-generated). Render at plantuml.com or with the PlantUML tool.
+interface IModule {
+  +getName(): String
+  +getView(): JComponent
+  +onShow(): void
+}
+interface IQuiz {
+  +loadQuestions(): List<Question>
+  +scorePercent(): int
+  +motivationalMessage(int): String
+}
+interface IGamification {
+  +addPoints(int): void
+  +totalPoints(): int
+  +awardedBadges(): List<Badge>
+  +leaderboard(): List<String>
+}
+interface IDataStorage {
+  +saveScore(String,int): void
+  +readScores(): List<String[]>
+}
+
+abstract class AppModule {
+  #ctx: AppContext
+  +getName(): String
+  #placeholder(String): JComponent
+}
+abstract class Question {
+  #prompt: String
+  +{abstract} checkAnswer(String): boolean
+  +{abstract} render(): JComponent
+}
+abstract class Screen
+
+class LearningModule
+class ContentPage
+class QuizModule
+class MCQQuestion
+class TrueFalseQuestion
+class GamificationModule
+class Badge
+class DataManager
+class UserProfile
+class AppContext
+class Navigator
+class HomeScreen
+class Main
+
+IModule <|.. AppModule
+AppModule <|-- LearningModule
+AppModule <|-- QuizModule
+AppModule <|-- GamificationModule
+IQuiz <|.. QuizModule
+IGamification <|.. GamificationModule
+IDataStorage <|.. DataManager
+Question <|-- MCQQuestion
+Question <|-- TrueFalseQuestion
+Screen <|-- HomeScreen
+
+QuizModule "1" o-- "many" Question
+LearningModule "1" o-- "many" ContentPage
+GamificationModule "1" o-- "many" Badge
+AppContext "1" --> "1" Navigator
+AppContext "1" --> "1" IDataStorage
+DataManager ..> UserProfile
+Main --> AppContext
+@enduml
