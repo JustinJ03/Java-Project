@@ -12,7 +12,7 @@ import javax.swing.border.*;
  * To compile:  javac *.java
  * To run:      java Main
  */
-public class Main extends JFrame {
+public class main extends JFrame {
 
     static final int   WIDTH = 480;     // fixed width for a mobile-like window, which helps to maintain good readability and visual appeal across different screen sizes and content variations, contributing to a polished and user-friendly design for the learning module panel that effectively organizes the educational material while maintaining good readability and visual appeal across different screen sizes and content variations
     static final int   HEIGHT = 820;        // fixed height for a mobile-like window, which helps to maintain good readability and visual appeal across different screen sizes and content variations, contributing to a polished and user-friendly design for the learning module panel that effectively organizes the educational material while maintaining good readability and visual appeal across different screen sizes and content variations
@@ -36,7 +36,7 @@ public class Main extends JFrame {
     // DataManager       dataManager;   // Member 4
     // UserProfile       userProfile;   // Member 4
 
-    public Main() {
+    public main() {
         super("SDG 4 - Quality Education");     // set the title of the application window to "SDG 4 - Quality Education", which helps to establish the theme and purpose of the app while maintaining good readability and visual appeal across different screen sizes and content variations, contributing to a polished and user-friendly design for the learning module panel that effectively organizes the educational material while maintaining good readability and visual appeal across different screen sizes and content variations
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);     // ensure that the application exits when the window is closed, which is a standard behavior for desktop applications and helps to provide a good user experience while maintaining good readability and visual appeal across different screen sizes and content variations, contributing to a polished and user-friendly design for the learning module panel that effectively organizes the educational material while maintaining good readability and visual appeal across different screen sizes and content variations
         setSize(WIDTH, HEIGHT);     // set the initial size of the application window to the defined WIDTH and HEIGHT constants, which helps to maintain good readability and visual appeal across different screen sizes and content variations, contributing to a polished and user-friendly design for the learning module panel that effectively organizes the educational material while maintaining good readability and visual appeal across different screen sizes and content variations
@@ -336,6 +336,6 @@ public class Main extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new Main().setVisible(true));      // launch the application by creating an instance of the Main class and making it visible on the Event Dispatch Thread, which ensures that the GUI is created and updated in a thread-safe manner while maintaining good readability and visual appeal across different screen sizes and content variations, contributing to a polished and user-friendly design for the learning module panel that effectively organizes the educational material while maintaining good readability and visual appeal across different screen sizes and content variations
+        SwingUtilities.invokeLater(() -> new main().setVisible(true));      // launch the application by creating an instance of the main class and making it visible on the Event Dispatch Thread, which ensures that the GUI is created and updated in a thread-safe manner while maintaining good readability and visual appeal across different screen sizes and content variations, contributing to a polished and user-friendly design for the learning module panel that effectively organizes the educational material while maintaining good readability and visual appeal across different screen sizes and content variations
     }
 }
