@@ -1,8 +1,6 @@
 // Test infrastructure -- shared by all members. No renaming needed.
 // Run after renaming your (suggestion) source files and implementing your TODOs:
-//   javac -d out src\main\Main.java src\app\*.java src\interfaces\*.java ^
-//         src\learning\*.java src\quiz\*.java src\gamification\*.java ^
-//         src\data\*.java src\data\exceptions\*.java tests\TestSuite.java
+//   build.bat
 //   java -cp out tests.TestSuite
 //
 // TEST LABELS:
@@ -10,7 +8,6 @@
 //   [LOGIC]      -- tests runtime behaviour; RED until you implement the TODO
 package tests;
 
-import app.AppContext;
 import gamification.Badge;
 import gamification.GamificationModule;
 import learning.ContentPage;
@@ -75,14 +72,20 @@ public class TestSuite {
     // Member 1 -- ContentPage
     // -----------------------------------------------------------------------
     private static void testContentPage() {
-        ContentPage p1 = new ContentPage("Title", "Body text");
-        check("[STRUCTURAL] ContentPage 2-arg: title stored",    "Title".equals(p1.getTitle()));
-        check("[STRUCTURAL] ContentPage 2-arg: body stored",     "Body text".equals(p1.getBody()));
-        check("[STRUCTURAL] ContentPage 2-arg: imagePath null",  p1.getImagePath() == null);
+        ContentPage p1 = new ContentPage(1, "Title", "Body text");
+        check("[STRUCTURAL] ContentPage 3-arg: title stored",    "Title".equals(p1.getTitle()));
+        check("[STRUCTURAL] ContentPage 3-arg: body stored",     "Body text".equals(p1.getBodyText()));
+        check("[STRUCTURAL] ContentPage 3-arg: imagePath null",  p1.getImagePath() == null);
+        check("[STRUCTURAL] ContentPage 3-arg: pageNumber stored", p1.getPageNumber() == 1);
+        check("[STRUCTURAL] ContentPage: starts not viewed",     !p1.isViewed());
 
-        ContentPage p2 = new ContentPage("T2", "B2", "img/photo.png");
-        check("[STRUCTURAL] ContentPage 3-arg: title stored",    "T2".equals(p2.getTitle()));
-        check("[STRUCTURAL] ContentPage 3-arg: imagePath stored","img/photo.png".equals(p2.getImagePath()));
+        p1.markViewed();
+        check("[STRUCTURAL] ContentPage: markViewed() sets viewed", p1.isViewed());
+
+        ContentPage p2 = new ContentPage(2, "T2", "B2", "img/photo.png");
+        check("[STRUCTURAL] ContentPage 4-arg: title stored",    "T2".equals(p2.getTitle()));
+        check("[STRUCTURAL] ContentPage 4-arg: imagePath stored","img/photo.png".equals(p2.getImagePath()));
+        check("[STRUCTURAL] ContentPage 4-arg: pageNumber stored", p2.getPageNumber() == 2);
         check("[STRUCTURAL] ContentPage objects are independent", p1 != p2);
     }
 
@@ -132,7 +135,7 @@ public class TestSuite {
     // Member 2 -- QuizModule scoring (ALL 10 boundary values)
     // -----------------------------------------------------------------------
     private static void testQuizScoring() {
-        QuizModule qm = new QuizModule(new AppContext());
+        QuizModule qm = new QuizModule();
 
         check("[LOGIC] motivational   0% -> Don't give up!",    "Don't give up!".equals(qm.motivationalMessage(0)));
         check("[LOGIC] motivational  19% -> Don't give up!",    "Don't give up!".equals(qm.motivationalMessage(19)));
@@ -165,7 +168,7 @@ public class TestSuite {
     // Member 3 -- GamificationModule
     // -----------------------------------------------------------------------
     private static void testGamification() {
-        GamificationModule gm = new GamificationModule(new AppContext());
+        GamificationModule gm = new GamificationModule();
 
         check("[STRUCTURAL] GamificationModule: starts at 0 points",  gm.totalPoints() == 0);
         check("[STRUCTURAL] GamificationModule: starts with no badges",gm.awardedBadges().isEmpty());
