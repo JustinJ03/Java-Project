@@ -60,7 +60,7 @@ public class Main extends JFrame {
     void initModels() {
         learningModule = new LearningModule("Quality Education", "SDG 4");      // Member 1
         gamifModule    = new GamificationModule();                               // Member 3
-        // quizModule  = new QuizModule();                      // Member 2 (uncomment when ready)
+        quizModule  = new QuizModule();                      // Member 2 
         // dataManager = new DataManager("data/scores.txt");    // Member 4
         // userProfile = dataManager.loadProfile("Player1");    // Member 4
     }
