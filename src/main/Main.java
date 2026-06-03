@@ -74,9 +74,7 @@ public class Main extends JFrame {
         // ── Members 2, 3, 4: placeholders ───────────────────────────────────
         // When ready, replace placeholder(...) with the real panel, e.g.:
         //   cardPanel.add(new QuizPanel(quizModule), "QUIZ");
-        cardPanel.add(makePlaceholder("Quiz Module",
-                "Member 2 — QuizModule + Question\n(IQuiz interface)",
-                1), "QUIZ");
+        cardPanel.add(makePlaceholder(quizModule, "QUIZ");
         cardPanel.add(gamifModule.getView(), "BADGES");          // Member 3 (LIVE)
         cardPanel.add(makePlaceholder("My Profile",
                 "Member 4 — DataManager + UserProfile\n(IDataStorage interface)",
