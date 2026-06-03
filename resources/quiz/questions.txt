@@ -24,3 +24,13 @@ TF|Lifelong learning is part of SDG 4.||true
 TF|Gender equality in education is unrelated to SDG 4.||false
 TF|There are 17 Sustainable Development Goals.||true
 TF|SDG 4 includes a target for free primary and secondary education.||true
+
+# --- Fun & Scenario-Based Questions ---
+MCQ|If a brand new school is built on a mountain with no roads or buses, which barrier to education is this?|A dragon guarding the gate;Physical lack of access;Too much homework;Poor Wi-Fi signal|1
+TF|According to SDG 4, learning officially stops the moment you graduate from university.||false
+MCQ|What real-life "superpower" does a quality education give to individuals and communities?|The ability to fly;Invisibility;Breaking the cycle of poverty;Reading minds|2
+TF|Teaching a grandmother how to use a smartphone or computer is an example of "lifelong learning."||true
+MCQ|During the COVID-19 pandemic, how many users globally relied on e-learning platforms?|A few thousand;Around one million;Over one billion;Nobody|2
+TF|Building ramps in a school only benefits students who use wheelchairs, so it is not an important part of SDG 4.||false
+MCQ|Which of these is definitely NOT a good way to achieve Quality Education for all?|Investing in teacher training;Banning certain genders from school;Building safe classrooms;Providing free primary education|1
+MCQ|If you are playing a video game that teaches you how to code in Java, which SDG 4 concept are you participating in?|Digital and interactive learning;Child labour;Gender inequality;Infrastructure building|0
