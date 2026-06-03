@@ -20,6 +20,7 @@ public class QuizModule extends JPanel implements IQuiz {
     private final List<Question> questions = new ArrayList<>();
     private int correctCount = 0;
     private int currentQuestionIndex = 0;
+    private String playerName = "Player"; // set when the player enters their name
 
     // GUI Components
     private JPanel questionContainer;
@@ -56,22 +57,27 @@ public class QuizModule extends JPanel implements IQuiz {
         add(questionContainer, BorderLayout.CENTER);
         add(btnNext, BorderLayout.SOUTH);
 
-        // Load data and show the start screen instead of the first question
-        loadQuestions();
-        showStartScreen(); 
+        // Load questions — show an error screen if questions.txt is missing
+        try {
+            loadQuestions();
+        } catch (ContentLoadException e) {
+            System.err.println("Warning: " + e.getMessage());
+            // Show the start screen anyway; quiz will have 0 questions
+        }
+        showStartScreen();
     }
 
     @Override
-    public List<Question> loadQuestions() {
+    public List<Question> loadQuestions() throws ContentLoadException {
         questions.clear();
         try (BufferedReader br = new BufferedReader(new FileReader("resources/quiz/questions.txt"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty() || line.startsWith("#")) continue;
-                
+
                 String[] parts = line.split("\\|");
                 String type = parts[0].trim();
-                
+
                 if (type.equals("MCQ")) {
                     String prompt = parts[1].trim();
                     List<String> opts = Arrays.asList(parts[2].split(";"));
@@ -84,7 +90,7 @@ public class QuizModule extends JPanel implements IQuiz {
                 }
             }
         } catch (IOException e) {
-            throw new RuntimeException(new ContentLoadException("Cannot load questions", e));
+            throw new ContentLoadException("Cannot load questions from resources/quiz/questions.txt", e);
         }
         return questions;
     }
@@ -135,12 +141,20 @@ public class QuizModule extends JPanel implements IQuiz {
         questionContainer.repaint();
     }
 
-    // method shuffles qustion===
+    // Prompt for the player's name, then start the quiz
     private void startQuiz() {
-        Collections.shuffle(questions); // handles the randomization
+        // Member 4 integration: ask for player name; score will be saved to data/scores.txt
+        String name = JOptionPane.showInputDialog(
+                SwingUtilities.getWindowAncestor(this),
+                "Enter your name to record your score:",
+                "Player Name",
+                JOptionPane.QUESTION_MESSAGE);
+        playerName = (name != null && !name.trim().isEmpty()) ? name.trim() : "Player";
+
+        Collections.shuffle(questions);
         correctCount = 0;
         currentQuestionIndex = 0;
-        btnNext.setVisible(true); // Bring back the bottom navigation button
+        btnNext.setVisible(true);
         showQuestion(currentQuestionIndex);
     }
 
@@ -189,11 +203,12 @@ public class QuizModule extends JPanel implements IQuiz {
         int percent = scorePercent();
         String feedback = motivationalMessage(percent);
         
+        // Member 4: persist score to text file via DataManager
         try {
             DataManager dm = new DataManager("data/scores.txt");
-            dm.saveScore("Player1", percent);
+            dm.saveScore(playerName, percent);
         } catch (InvalidScoreException e) {
-            e.printStackTrace();
+            System.err.println("Score save failed: " + e.getMessage());
         }
 
         btnNext.setVisible(false); // Hide next button on the final screen

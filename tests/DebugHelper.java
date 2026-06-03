@@ -14,6 +14,7 @@ import learning.LearningModule;
 import quiz.Question;
 import quiz.QuizModule;
 import data.DataManager;
+import data.exceptions.ContentLoadException;
 import data.exceptions.DataNotFoundException;
 
 import java.io.File;
@@ -102,7 +103,13 @@ public class DebugHelper {
     public static void dumpQuestions() {
         System.out.println("\n[QUIZ] Loading questions from resources/quiz/questions.txt ...");
         QuizModule qm = new QuizModule();
-        List<Question> questions = qm.loadQuestions();
+        List<Question> questions;
+        try {
+            questions = qm.loadQuestions();
+        } catch (ContentLoadException e) {
+            System.out.println("      ContentLoadException: " + e.getMessage());
+            return;
+        }
         if (questions.isEmpty()) {
             System.out.println("      0 questions loaded.");
             System.out.println("      Check: (a) questions.txt is renamed, (b) Member 2's");

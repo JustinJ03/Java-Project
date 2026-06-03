@@ -1,5 +1,6 @@
 package main;
 
+import data.ProfilePanel;
 import gamification.GamificationModule;
 import java.awt.*;
 import javax.swing.*;
@@ -37,10 +38,9 @@ public class Main extends JFrame {
     JButton[]  tabBtns = new JButton[4];
 
     LearningModule     learningModule;      // Member 1
-    QuizModule         quizModule;          // Member 2 
+    QuizModule         quizModule;          // Member 2
     GamificationModule gamifModule;         // Member 3
-    // DataManager     dataManager;         // Member 4
-    // UserProfile     userProfile;         // Member 4
+    ProfilePanel       profilePanel;        // Member 4
 
     public Main() {
         super("SDG 4 - Quality Education");
@@ -59,8 +59,9 @@ public class Main extends JFrame {
 
     void initModels() {
         learningModule = new LearningModule("Quality Education", "SDG 4");      // Member 1
+        quizModule     = new QuizModule();                                        // Member 2
         gamifModule    = new GamificationModule();                               // Member 3
-        quizModule  = new QuizModule();                      // Member 2 
+        profilePanel   = new ProfilePanel();                                     // Member 4
         // dataManager = new DataManager("data/scores.txt");    // Member 4
         // userProfile = dataManager.loadProfile("Player1");    // Member 4
     }
@@ -72,14 +73,9 @@ public class Main extends JFrame {
         // ── Member 1: Learning panel (LIVE) ─────────────────────────────────
         cardPanel.add(new LearningModulePanel(learningModule), "LEARN");
 
-        // ── Members 2, 3, 4: placeholders ───────────────────────────────────
-        // When ready, replace placeholder(...) with the real panel, e.g.:
-        //   cardPanel.add(new QuizPanel(quizModule), "QUIZ");
-        cardPanel.add(quizModule, "QUIZ");
-        cardPanel.add(gamifModule.getView(), "BADGES");          // Member 3 (LIVE)
-        cardPanel.add(makePlaceholder("My Profile",
-                "Member 4 — DataManager + UserProfile\n(IDataStorage interface)",
-                3), "PROFILE");
+        cardPanel.add(quizModule,           "QUIZ");    // Member 2 (LIVE)
+        cardPanel.add(gamifModule.getView(), "BADGES");  // Member 3 (LIVE)
+        cardPanel.add(profilePanel,          "PROFILE"); // Member 4 (LIVE)
 
         add(cardPanel,    BorderLayout.CENTER);
         add(makeTabBar(), BorderLayout.SOUTH);
@@ -149,7 +145,8 @@ public class Main extends JFrame {
         String[] cards = { "LEARN", "QUIZ", "BADGES", "PROFILE" };
         cardLayout.show(cardPanel, cards[idx]);
         // Notify active modules so they can refresh their display
-        if (idx == 2 && gamifModule != null) gamifModule.onShow();
+        if (idx == 2 && gamifModule   != null) gamifModule.onShow();
+        if (idx == 3 && profilePanel  != null) profilePanel.onShow();
         for (int i = 0; i < tabBtns.length; i++) {
             boolean active = (i == idx);
             Color c = TAB_COLORS[i];

@@ -192,11 +192,27 @@ public class TestSuite {
     // -----------------------------------------------------------------------
     private static void testUserProfile() {
         UserProfile u = new UserProfile("Alice");
-        check("[STRUCTURAL] UserProfile: getName()",       "Alice".equals(u.getName()));
-        check("[STRUCTURAL] UserProfile: initial score 0", u.getLastScore() == 0);
+        check("[STRUCTURAL] UserProfile: getName()",           "Alice".equals(u.getName()));
+        check("[STRUCTURAL] UserProfile: initial lastScore 0", u.getLastScore() == 0);
+        check("[STRUCTURAL] UserProfile: initial bestScore 0", u.getBestScore() == 0);
+        check("[STRUCTURAL] UserProfile: initial quizzesTaken 0", u.getQuizzesTaken() == 0);
 
         u.setLastScore(85);
-        check("[STRUCTURAL] UserProfile: setLastScore()",  u.getLastScore() == 85);
+        check("[STRUCTURAL] UserProfile: setLastScore()",      u.getLastScore() == 85);
+
+        // recordScore updates bestScore and quizzesTaken
+        u.recordScore(70);
+        check("[LOGIC] UserProfile: recordScore increments quizzesTaken", u.getQuizzesTaken() == 1);
+        check("[LOGIC] UserProfile: recordScore updates lastScore",        u.getLastScore() == 70);
+        check("[LOGIC] UserProfile: recordScore sets bestScore on first",  u.getBestScore() == 70);
+
+        u.recordScore(90);
+        check("[LOGIC] UserProfile: bestScore updates when new score higher", u.getBestScore() == 90);
+        check("[LOGIC] UserProfile: quizzesTaken increments again",           u.getQuizzesTaken() == 2);
+
+        u.recordScore(50);
+        check("[LOGIC] UserProfile: bestScore unchanged when new score lower", u.getBestScore() == 90);
+        check("[LOGIC] UserProfile: quizzesTaken = 3 after third quiz",        u.getQuizzesTaken() == 3);
     }
 
     // -----------------------------------------------------------------------
@@ -215,6 +231,10 @@ public class TestSuite {
         data.exceptions.ContentLoadException cle =
                 new data.exceptions.ContentLoadException("load fail", new RuntimeException());
         check("[STRUCTURAL] ContentLoadException(msg,cause)",   "load fail".equals(cle.getMessage()));
+
+        data.exceptions.ContentLoadException cle2 =
+                new data.exceptions.ContentLoadException("no cause");
+        check("[STRUCTURAL] ContentLoadException(msg) single-arg", "no cause".equals(cle2.getMessage()));
     }
 
     // -----------------------------------------------------------------------

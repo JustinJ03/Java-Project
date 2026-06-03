@@ -1,20 +1,83 @@
 package data;
 
 /**
- * Holds per-session player information.
+ * UserProfile.java
+ * Holds per-session player information and statistics.
  *
- * Member 4 -- this file is complete.
+ * OOP concepts:
+ *   - Encapsulation: all fields private, accessed via getters/setters
+ *   - Abstraction: clients call recordScore() without knowing internal logic
+ *
+ * Creator : Member 4
+ * Tester  : Member 4
  */
 public class UserProfile {
 
-    private final String name;
-    private int lastScore;
+    // ── Fields ────────────────────────────────────────────────────────────────
+    private final String name;          // player name (set at session start)
+    private int    lastScore;           // score of the most recent quiz (0-100)
+    private int    bestScore;           // highest score achieved this session
+    private int    quizzesTaken;        // total number of quizzes completed
 
+    // ── Constructor ───────────────────────────────────────────────────────────
+
+    /**
+     * Creates a new profile for the given player.
+     * All numeric stats begin at 0.
+     *
+     * @param name the player's name (cannot be null)
+     */
     public UserProfile(String name) {
-        this.name = name;
+        this.name         = (name != null && !name.trim().isEmpty()) ? name.trim() : "Guest";
+        this.lastScore    = 0;
+        this.bestScore    = 0;
+        this.quizzesTaken = 0;
     }
 
-    public String getName()                    { return name; }
-    public int    getLastScore()               { return lastScore; }
-    public void   setLastScore(int lastScore)  { this.lastScore = lastScore; }
+    // ── recordScore — encapsulates stat-update logic ──────────────────────────
+
+    /**
+     * Records the result of a completed quiz.
+     * Updates lastScore, increments quizzesTaken, and raises bestScore if the
+     * new score is higher.
+     *
+     * <p>Demonstrates abstraction: the caller just says "record this score" and
+     * the object handles all derived-state updates internally.</p>
+     *
+     * @param score percentage score (0-100)
+     */
+    public void recordScore(int score) {
+        this.lastScore = score;
+        this.quizzesTaken++;
+        if (score > this.bestScore) {
+            this.bestScore = score;
+        }
+    }
+
+    // ── Getters & Setters ─────────────────────────────────────────────────────
+
+    /** @return the player's name as entered at session start */
+    public String getName()          { return name; }
+
+    /** @return score of the last completed quiz */
+    public int    getLastScore()     { return lastScore; }
+
+    /** @return highest quiz score achieved in this session */
+    public int    getBestScore()     { return bestScore; }
+
+    /** @return total number of quizzes completed in this session */
+    public int    getQuizzesTaken()  { return quizzesTaken; }
+
+    /**
+     * Manually overrides lastScore (used by DataManager overload).
+     * Prefer {@link #recordScore(int)} for normal in-session score recording.
+     */
+    public void   setLastScore(int lastScore) { this.lastScore = lastScore; }
+
+    // ── toString ──────────────────────────────────────────────────────────────
+    @Override
+    public String toString() {
+        return String.format("UserProfile{name='%s', last=%d, best=%d, quizzes=%d}",
+                name, lastScore, bestScore, quizzesTaken);
+    }
 }
