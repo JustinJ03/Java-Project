@@ -36,7 +36,7 @@ public class Main extends JFrame {
     JButton[]  tabBtns = new JButton[4];
 
     LearningModule     learningModule;      // Member 1
-    // QuizModule      quizModule;          // Member 2 (uncomment when ready)
+    QuizModule         quizModule;          // Member 2 
     GamificationModule gamifModule;         // Member 3
     // DataManager     dataManager;         // Member 4
     // UserProfile     userProfile;         // Member 4
