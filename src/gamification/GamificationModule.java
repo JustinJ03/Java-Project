@@ -1,7 +1,6 @@
 package gamification;
 
-import app.AppContext;
-import app.AppModule;
+import data.DataManager;
 import data.exceptions.DataNotFoundException;
 import interfaces.IGamification;
 import javax.swing.*;
@@ -17,24 +16,28 @@ import java.util.List;
  *   Keeps track of the player's points and badges, displays a leaderboard,
  *   and shows an optional countdown timer during a quiz session.
  *
- * EXTENDS: AppModule   -- getName(), onShow(), placeholder() helper.
+ * EXTENDS: JPanel      -- lightweight Swing container for Main's CardLayout
  * IMPLEMENTS: IGamification -- addPoints(), totalPoints(), awardedBadges(), leaderboard().
  *
  * OOP CONCEPTS TO DEMONSTRATE:
- *   - Inheritance     : extends AppModule
- *   - Overriding      : getView(), onShow()
+ *   - Inheritance     : extends JPanel
+ *   - Overriding      : all IGamification methods
  *   - Method overloading : addPoints(int) AND addPoints(int, String reason)
  *   - Exception handling : DataNotFoundException from readScores()
  */
-public class GamificationModule extends AppModule implements IGamification {
+public class GamificationModule extends JPanel implements IGamification {
 
     // === FIELDS ===
     private int points = 0;
     private final List<Badge> badges = new ArrayList<>();
 
     // === CONSTRUCTOR ===
-    public GamificationModule(AppContext ctx) {
-        super(ctx, "Gamification");
+    /**
+     * No-arg constructor required for Main's CardLayout management.
+     * Main instantiates modules directly and adds them to the CardLayout.
+     */
+    public GamificationModule() {
+        super();
     }
 
     // =========================================================
@@ -91,7 +94,7 @@ public class GamificationModule extends AppModule implements IGamification {
      * HOW TO IMPLEMENT:
      *   STEP 1: Read scores with a try-catch:
      *             try {
-     *                 List<String[]> rows = ctx.storage().readScores();
+     *                 List<String[]> rows = DataManager.getInstance().readScores();
      *             } catch (DataNotFoundException e) {
      *                 return new ArrayList<>(); // no scores yet
      *             }
@@ -113,7 +116,7 @@ public class GamificationModule extends AppModule implements IGamification {
     }
 
     // =========================================================
-    // METHOD: getView()  [OVERRIDE -- required by IModule]
+    // METHOD: getView()  [DEPRECATED -- GamificationModule now IS a JPanel]
     // =========================================================
     /**
      * Builds and returns the Gamification Module's Swing panel.
@@ -138,12 +141,13 @@ public class GamificationModule extends AppModule implements IGamification {
      *
      *   STEP 6: Return the main panel.
      *
-     * OOP NOTE: Overrides AppModule.getView() -- overriding + polymorphism.
+     * OOP NOTE: Previously overrode AppModule.getView(). Now GamificationModule extends JPanel,
+     *           so build the UI directly in the constructor or an init() method.
      */
     @Override
     public JComponent getView() {
-        // TODO(Member 3): implement using the steps above.
-        return placeholder("Gamification: implement getView() -- see comments above.");
+        // TODO(Member 3): This method is for backward compatibility. Build UI in constructor instead.
+        return new JPanel();
     }
 
     // =========================================================
