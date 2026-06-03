@@ -1,178 +1,184 @@
 package quiz;
 
+import data.DataManager;
 import data.exceptions.ContentLoadException;
 import data.exceptions.InvalidScoreException;
 import interfaces.IQuiz;
+
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * TASK: Member 2 - Quiz Module
- *
- * PURPOSE:
- *   Loads 20+ questions from questions.txt, presents them one at a time,
- *   calculates the player's score, shows a motivational message, and
- *   saves the result via DataManager.
- *
- * EXTENDS: JPanel     -- lightweight Swing container for Main's CardLayout
- * IMPLEMENTS: IQuiz   -- loadQuestions(), scorePercent(), motivationalMessage().
- *
- * OOP CONCEPTS TO DEMONSTRATE:
- *   - Inheritance     : extends JPanel
- *   - Overriding      : all IQuiz methods
- *   - Polymorphism    : the questions list holds Question objects; checkAnswer()
- *                       and render() dispatch to MCQQuestion or TrueFalseQuestion
- *                       at runtime without the QuizModule knowing the concrete type
- *   - Exception handling : InvalidScoreException, ContentLoadException
- */
 public class QuizModule extends JPanel implements IQuiz {
 
-    // === FIELDS ===
     private final List<Question> questions = new ArrayList<>();
-    private int correctCount = 0; // tracks how many answers were correct
+    private int correctCount = 0;
+    private int currentQuestionIndex = 0;
 
-    // === CONSTRUCTOR ===
-    /**
-     * No-arg constructor required for Main's CardLayout management.
-     * Main instantiates modules directly and adds them to the CardLayout.
-     */
+    // GUI Components
+    private JPanel questionContainer;
+    private JLabel progressLabel;
+    private JButton btnNext;
+
     public QuizModule() {
         super();
+        setLayout(new BorderLayout());
+        setBackground(Color.WHITE);
+        setBorder(new EmptyBorder(20, 20, 20, 20));
+
+        // Initialize UI panels
+        questionContainer = new JPanel(new BorderLayout());
+        questionContainer.setOpaque(false);
+
+        progressLabel = new JLabel("Question 1 / 0");
+        progressLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        progressLabel.setForeground(new Color(26, 122, 74));
+
+        btnNext = new JButton("Next / Submit");
+        btnNext.setBackground(new Color(26, 122, 74));
+        btnNext.setForeground(Color.WHITE);
+        btnNext.setFocusPainted(false);
+        btnNext.addActionListener(e -> advanceQuestion());
+
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setOpaque(false);
+        headerPanel.add(progressLabel, BorderLayout.WEST);
+        headerPanel.setBorder(new EmptyBorder(0, 0, 20, 0));
+
+        add(headerPanel, BorderLayout.NORTH);
+        add(questionContainer, BorderLayout.CENTER);
+        add(btnNext, BorderLayout.SOUTH);
+
+        // Load data and start quiz
+        loadQuestions();
+        showQuestion(0);
     }
 
-    // =========================================================
-    // METHOD: loadQuestions()  [IQuiz]
-    // =========================================================
-    /**
-     * Parses questions.txt and populates the questions list.
-     *
-     * FILE FORMAT (each line is one question):
-     *   MCQ|prompt|opt1;opt2;opt3;opt4|correctIndex
-     *   TF|prompt||true          (or false)
-     *   Lines starting with '#' are comments -- skip them.
-     *
-     * HOW TO IMPLEMENT:
-     *   STEP 1: Open "resources/quiz/questions.txt" with BufferedReader.
-     *
-     *   STEP 2: For each non-blank, non-comment line:
-     *             String[] parts = line.split("\\|");
-     *             String type = parts[0].trim();
-     *
-     *   STEP 3: If type.equals("MCQ"):
-     *             String prompt   = parts[1].trim();
-     *             List<String> opts = Arrays.asList(parts[2].split(";"));
-     *             int correctIdx  = Integer.parseInt(parts[3].trim());
-     *             questions.add(new MCQQuestion(prompt, opts, correctIdx));
-     *
-     *   STEP 4: If type.equals("TF"):
-     *             String prompt  = parts[1].trim();
-     *             boolean answer = Boolean.parseBoolean(parts[3].trim());
-     *             questions.add(new TrueFalseQuestion(prompt, answer));
-     *
-     *   STEP 5: Use try-with-resources. On IOException throw:
-     *             new ContentLoadException("Cannot load questions", e);
-     *
-     *   EXPECTED: questions.size() >= 20.
-     *
-     * OOP NOTE: Overrides IQuiz.loadQuestions(). The list is typed as
-     *           List<Question> -- polymorphism lets you add both MCQ and TF.
-     */
     @Override
     public List<Question> loadQuestions() {
-        // TODO(Member 2): implement using the steps above.
+        questions.clear();
+        try (BufferedReader br = new BufferedReader(new FileReader("resources/quiz/questions.txt"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty() || line.startsWith("#")) continue;
+                
+                String[] parts = line.split("\\|");
+                String type = parts[0].trim();
+                
+                if (type.equals("MCQ")) {
+                    String prompt = parts[1].trim();
+                    List<String> opts = Arrays.asList(parts[2].split(";"));
+                    int correctIdx = Integer.parseInt(parts[3].trim());
+                    questions.add(new MCQQuestion(prompt, opts, correctIdx));
+                } else if (type.equals("TF")) {
+                    String prompt = parts[1].trim();
+                    boolean answer = Boolean.parseBoolean(parts[3].trim());
+                    questions.add(new TrueFalseQuestion(prompt, answer));
+                }
+            }
+        } catch (IOException e) {
+            // Wrapping the checked exception in a RuntimeException as IQuiz interface doesn't declare throws
+            throw new RuntimeException(new ContentLoadException("Cannot load questions", e));
+        }
         return questions;
     }
 
-    // =========================================================
-    // METHOD: scorePercent()  [IQuiz]
-    // =========================================================
-    /**
-     * Returns the player's score as a percentage.
-     *
-     * HOW TO IMPLEMENT:
-     *   return questions.isEmpty() ? 0 : correctCount * 100 / questions.size();
-     *
-     * BOUNDARY: if questions is empty, return 0 to avoid division by zero.
-     */
     @Override
     public int scorePercent() {
-        // TODO(Member 2): implement using the formula above.
-        return 0;
+        return questions.isEmpty() ? 0 : (correctCount * 100) / questions.size();
     }
 
-    // =========================================================
-    // METHOD: motivationalMessage(int percent)  [IQuiz]
-    // =========================================================
-    /**
-     * Maps a score percentage to the required motivational message.
-     *
-     * HOW TO IMPLEMENT (use if-else if chain -- EXACT strings required):
-     *
-     *   if      (percent >= 80) return "Outstanding!";
-     *   else if (percent >= 60) return "That's good!";
-     *   else if (percent >= 40) return "Good try!";
-     *   else if (percent >= 20) return "You can do better!";
-     *   else                    return "Don't give up!";
-     *
-     * IMPORTANT: The TestSuite checks ALL 10 boundary values (0, 19, 20,
-     *            39, 40, 59, 60, 79, 80, 100). Get the >= conditions right.
-     */
     @Override
     public String motivationalMessage(int percent) {
-        // TODO(Member 2): implement the if-else chain above.
-        return "";
+        if (percent >= 80) return "Outstanding!";
+        else if (percent >= 60) return "That's good!";
+        else if (percent >= 40) return "Good try!";
+        else if (percent >= 20) return "You can do better!";
+        else return "Don't give up!";
     }
 
-    // =========================================================
-    // METHOD: getView()  [DEPRECATED -- QuizModule now IS a JPanel]
-    // =========================================================
-    /**
-     * Builds and returns the Quiz Module's Swing panel.
-     *
-     * HOW TO IMPLEMENT:
-     *   STEP 1: Load questions if not done: if (questions.isEmpty()) loadQuestions();
-     *
-     *   STEP 2: Create a main JPanel to hold the current question's render() output.
-     *           Display questions[0].render() initially.
-     *
-     *   STEP 3: Add a "Submit" or "Next" button.
-     *           On click:
-     *             a. Read the player's selected answer (from the rendered component).
-     *             b. Call questions.get(currentIndex).checkAnswer(answer).
-     *             c. If correct: correctCount++;
-     *             d. Advance to the next question. If no more questions:
-     *                  - Show score: scorePercent() + "%" + motivationalMessage(scorePercent())
-     *                  - Save score: try { DataManager.getInstance().saveScore("Player", scorePercent()); }
-     *                                catch (InvalidScoreException e) { e.printStackTrace(); }
-     *                  - Optionally trigger gamification via DataManager.
-     *
-     *   STEP 4: Return the main panel.
-     *
-     * OOP NOTE: Previously overrode AppModule.getView(). Now QuizModule extends JPanel,
-     *           so build the UI directly in the constructor or an init() method.
-     */
+    private void showQuestion(int index) {
+        questionContainer.removeAll();
+        if (index < questions.size()) {
+            progressLabel.setText("Question " + (index + 1) + " / " + questions.size());
+            questionContainer.add(questions.get(index).render(), BorderLayout.CENTER);
+            
+            if (index == questions.size() - 1) {
+                btnNext.setText("Finish Quiz");
+            } else {
+                btnNext.setText("Next Question");
+            }
+        }
+        questionContainer.revalidate();
+        questionContainer.repaint();
+    }
+
+    private void advanceQuestion() {
+        if (currentQuestionIndex < questions.size()) {
+            Question q = questions.get(currentQuestionIndex);
+            String answer = "";
+            
+            // Extract the user's answer dynamically
+            if (q instanceof MCQQuestion) {
+                answer = ((MCQQuestion) q).getSelectedAnswer();
+            } else if (q instanceof TrueFalseQuestion) {
+                answer = ((TrueFalseQuestion) q).getSelectedAnswer();
+            }
+
+            // Grade answer
+            if (q.checkAnswer(answer)) {
+                correctCount++;
+            }
+
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < questions.size()) {
+                showQuestion(currentQuestionIndex);
+            } else {
+                finishQuiz();
+            }
+        }
+    }
+
+    private void finishQuiz() {
+        int percent = scorePercent();
+        String feedback = motivationalMessage(percent);
+        
+        // Save the score via Member 4's DataManager
+        try {
+            DataManager dm = new DataManager("data/scores.txt");
+            dm.saveScore("Player1", percent);
+        } catch (InvalidScoreException e) {
+            e.printStackTrace();
+        }
+
+        // Output results to user
+        btnNext.setEnabled(false);
+        questionContainer.removeAll();
+        
+        JLabel resultLabel = new JLabel("<html><center><h2>Quiz Complete!</h2><br>" 
+                                        + "Score: " + percent + "%<br><br>" 
+                                        + "<i>" + feedback + "</i></center></html>", SwingConstants.CENTER);
+        questionContainer.add(resultLabel, BorderLayout.CENTER);
+        questionContainer.revalidate();
+        questionContainer.repaint();
+    }
+
     public JComponent getView() {
-        // TODO(Member 2): This method is for backward compatibility. Build UI in constructor instead.
-        return new JPanel();
+        return this;
     }
 
-    // =========================================================
-    // METHOD: onShow()  [OVERRIDE -- optional]
-    // =========================================================
-    /**
-     * Reset the quiz state when the user navigates back to this module.
-     *
-     * HOW TO IMPLEMENT:
-     *   correctCount = 0;
-     *   questions.clear(); // reload fresh next time getView() is called
-     *
-     * OOP NOTE: Overrides AppModule.onShow().
-     */
     public void onShow() {
-        // TODO(Member 2): optionally reset correctCount and clear questions for a fresh quiz.
+        correctCount = 0;
+        currentQuestionIndex = 0;
+        btnNext.setEnabled(true);
+        loadQuestions();
+        showQuestion(currentQuestionIndex);
     }
 }
