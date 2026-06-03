@@ -3,6 +3,7 @@ package quiz;
 import data.DataManager;
 import data.exceptions.ContentLoadException;
 import data.exceptions.InvalidScoreException;
+import gamification.GamificationModule;
 import interfaces.IQuiz;
 
 import javax.swing.*;
@@ -17,38 +18,67 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * QuizModule.java
+ * Presents the SDG 4 quiz: loads questions from questions.txt, displays them
+ * one at a time with a 120-second countdown timer, checks answers, saves the
+ * score via DataManager, and notifies GamificationModule when the quiz ends.
+ *
+ * Creator : Member 2
+ * Tester  : Member 2
+ */
 public class QuizModule extends JPanel implements IQuiz {
 
-    private final List<Question> questions = new ArrayList<>();
-    private int correctCount = 0;
-    private int currentQuestionIndex = 0;
-    private boolean isAnswerSubmitted = false;
-    private String playerName = "Player"; // set when player enters name before the quiz
+    // ── Quiz state ────────────────────────────────────────────────────────────
+    private final List<Question> questions    = new ArrayList<>();
+    private int    correctCount              = 0;
+    private int    currentQuestionIndex      = 0;
+    private boolean isAnswerSubmitted        = false;
+    private String playerName               = "Player"; // set at quiz start via dialog
 
-    // Visual UI components for the screen
-    private JPanel questionContainer; 
-    private JLabel progressLabel; 
-    private JButton btnAction; 
-    private JLabel feedbackLabel;
+    // ── 120-second countdown timer ────────────────────────────────────────────
+    private static final int QUIZ_SECONDS    = 120;
+    private javax.swing.Timer quizTimer;
+    private int    remainingSeconds          = QUIZ_SECONDS;
 
-    // Constructor: Sets up the main layout when the app starts
+    // ── Integration callbacks (set by Main.java) ──────────────────────────────
+    /** Called when quiz ends — navigates to the Leaderboard tab. */
+    private Runnable goToLeaderboardCallback  = null;
+    /** Receives quiz result so gamification points/badges update immediately. */
+    private GamificationModule gamifModule    = null;
+
+    // ── UI components ─────────────────────────────────────────────────────────
+    private JPanel  questionContainer;
+    private JLabel  progressLabel;
+    private JLabel  timerLabel;
+    private JButton btnAction;
+    private JLabel  feedbackLabel;
+
+    // ── Constructor ───────────────────────────────────────────────────────────
+
     public QuizModule() {
         super();
         setLayout(new BorderLayout());
         setBackground(new Color(245, 247, 250));
-        setBorder(new EmptyBorder(20, 20, 20, 20)); // Padding around the edges
+        setBorder(new EmptyBorder(20, 20, 20, 20));
 
-        //Header
+        // Header: progress left, timer right
         progressLabel = new JLabel("");
         progressLabel.setFont(new Font("SansSerif", Font.BOLD, 18));
         progressLabel.setForeground(new Color(44, 62, 80));
 
+        timerLabel = new JLabel("");
+        timerLabel.setFont(new Font("Monospaced", Font.BOLD, 16));
+        timerLabel.setForeground(new Color(26, 122, 74));
+        timerLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setOpaque(false);
         headerPanel.add(progressLabel, BorderLayout.WEST);
+        headerPanel.add(timerLabel,    BorderLayout.EAST);
         headerPanel.setBorder(new EmptyBorder(0, 0, 20, 0));
 
-        //Main Content Card (Center)
+        // Main content card (center)
         questionContainer = new JPanel(new BorderLayout());
         questionContainer.setBackground(Color.WHITE);
         questionContainer.setBorder(BorderFactory.createCompoundBorder(
@@ -56,11 +86,11 @@ public class QuizModule extends JPanel implements IQuiz {
                 new EmptyBorder(25, 25, 25, 25)
         ));
 
-        //Action Area (Bottom)
-        feedbackLabel = new JLabel(""); // Starts empty
+        // Bottom action area: feedback label + button
+        feedbackLabel = new JLabel("");
         feedbackLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
         feedbackLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        
+
         btnAction = new JButton("Submit Answer");
         btnAction.setFont(new Font("SansSerif", Font.BOLD, 14));
         btnAction.setBackground(new Color(26, 122, 74));
@@ -68,22 +98,20 @@ public class QuizModule extends JPanel implements IQuiz {
         btnAction.setFocusPainted(false);
         btnAction.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btnAction.setPreferredSize(new Dimension(150, 40));
-        btnAction.setVisible(false); // Hidden until quiz starts
-        
-        // When the button is clicked, run the handleAction() method
+        btnAction.setVisible(false);
         btnAction.addActionListener(e -> handleAction());
 
         JPanel bottomPanel = new JPanel(new BorderLayout());
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(new EmptyBorder(20, 0, 0, 0));
         bottomPanel.add(feedbackLabel, BorderLayout.CENTER);
-        bottomPanel.add(btnAction, BorderLayout.EAST);
+        bottomPanel.add(btnAction,     BorderLayout.EAST);
 
-        add(headerPanel, BorderLayout.NORTH);
+        add(headerPanel,       BorderLayout.NORTH);
         add(questionContainer, BorderLayout.CENTER);
-        add(bottomPanel, BorderLayout.SOUTH);
+        add(bottomPanel,       BorderLayout.SOUTH);
 
-        // Read the text file and show the welcome page
+        // Load questions at construction; show start screen
         try {
             loadQuestions();
         } catch (ContentLoadException e) {
@@ -92,51 +120,60 @@ public class QuizModule extends JPanel implements IQuiz {
         showStartScreen();
     }
 
-    // Reads questions.txt and turns them into Java objects
+    // ── Integration setters (called from Main.java after construction) ─────────
+
+    /**
+     * Provides a GamificationModule reference so points/badges update the moment
+     * the quiz ends (OOP: cross-module communication via dependency injection).
+     */
+    public void setGamificationModule(GamificationModule gm) {
+        this.gamifModule = gm;
+    }
+
+    /**
+     * Provides a callback that navigates to the Leaderboard tab when the player
+     * clicks "View Leaderboard" on the results screen.
+     */
+    public void setGoToLeaderboardCallback(Runnable callback) {
+        this.goToLeaderboardCallback = callback;
+    }
+
+    // ── IQuiz implementation ──────────────────────────────────────────────────
+
+    /** Parses questions.txt and populates the question list (≥20 questions). */
     @Override
     public List<Question> loadQuestions() throws ContentLoadException {
         questions.clear();
         try (BufferedReader br = new BufferedReader(new FileReader("resources/quiz/questions.txt"))) {
             String line;
-            // Read every line one by one
             while ((line = br.readLine()) != null) {
-                // Ignore empty lines or comments starting with #
                 if (line.trim().isEmpty() || line.startsWith("#")) continue;
-                
-                // Split the text by the | symbol
                 String[] parts = line.split("\\|");
-                String type = parts[0].trim(); // Check if it is MCQ or TF
-                
+                String type = parts[0].trim();
                 if (type.equals("MCQ")) {
-                    String prompt = parts[1].trim();
-                    // Split the options by the ; symbol
+                    String prompt    = parts[1].trim();
                     List<String> opts = Arrays.asList(parts[2].split(";"));
-                    int correctIdx = Integer.parseInt(parts[3].trim());
-                    // Create the MCQ object and add to list
+                    int correctIdx   = Integer.parseInt(parts[3].trim());
                     questions.add(new MCQQuestion(prompt, opts, correctIdx));
-                    
                 } else if (type.equals("TF")) {
-                    String prompt = parts[1].trim();
+                    String prompt  = parts[1].trim();
                     boolean answer = Boolean.parseBoolean(parts[3].trim());
-                    // Create the True/False object and add to list
                     questions.add(new TrueFalseQuestion(prompt, answer));
                 }
             }
         } catch (IOException e) {
-            // Propagate as ContentLoadException so callers can handle it properly
             throw new ContentLoadException("Cannot load questions from resources/quiz/questions.txt", e);
         }
         return questions;
     }
 
-    // Calculates percentage (correct / total * 100)
+    /** Returns the score as a percentage (0-100). */
     @Override
     public int scorePercent() {
-        if (questions.isEmpty()) return 0;
-        return (correctCount * 100) / questions.size();
+        return questions.isEmpty() ? 0 : (correctCount * 100) / questions.size();
     }
 
-    // Syllabus grading scale
+    /** Maps a percentage to the five-band motivational message required by the rubric. */
     @Override
     public String motivationalMessage(int percent) {
         if (percent >= 80) return "Outstanding!";
@@ -146,13 +183,17 @@ public class QuizModule extends JPanel implements IQuiz {
         return "Don't give up!";
     }
 
-    // Builds the landing page before the quiz starts
+    // ── Screen builders ───────────────────────────────────────────────────────
+
+    /** Welcome / start screen. Stops any running timer. */
     private void showStartScreen() {
+        stopTimer();
+        timerLabel.setText("");
         questionContainer.removeAll();
-        questionContainer.setBackground(new Color(245, 247, 250)); 
+        questionContainer.setBackground(new Color(245, 247, 250));
         questionContainer.setBorder(null);
-        progressLabel.setText(""); 
-        btnAction.setVisible(false); 
+        progressLabel.setText("");
+        btnAction.setVisible(false);
         feedbackLabel.setText("");
 
         JPanel startPanel = new JPanel();
@@ -163,8 +204,11 @@ public class QuizModule extends JPanel implements IQuiz {
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 26));
         titleLabel.setForeground(new Color(26, 122, 74));
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        JLabel descLabel = new JLabel("<html><center>Test your knowledge on SDG 4!<br><br>Questions are randomized.</center></html>");
+
+        JLabel descLabel = new JLabel(
+                "<html><center>Test your knowledge on SDG 4!<br><br>"
+                + "Questions are randomized.<br>"
+                + "You have <b>" + QUIZ_SECONDS + " seconds</b> to finish.</center></html>");
         descLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
         descLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
@@ -174,11 +218,9 @@ public class QuizModule extends JPanel implements IQuiz {
         btnStart.setForeground(Color.WHITE);
         btnStart.setFocusPainted(false);
         btnStart.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        // When clicked, start the game
         btnStart.addActionListener(e -> startQuiz());
 
-        startPanel.add(Box.createVerticalStrut(60)); 
+        startPanel.add(Box.createVerticalStrut(60));
         startPanel.add(titleLabel);
         startPanel.add(Box.createVerticalStrut(20));
         startPanel.add(descLabel);
@@ -186,13 +228,13 @@ public class QuizModule extends JPanel implements IQuiz {
         startPanel.add(btnStart);
 
         questionContainer.add(startPanel, BorderLayout.CENTER);
-        questionContainer.revalidate(); // Refreshes UI
+        questionContainer.revalidate();
         questionContainer.repaint();
     }
 
-    // Ask player name, reset state, then start the quiz
+    /** Prompt for name, reset state, shuffle, start timer, show first question. */
     private void startQuiz() {
-        // Prompt for player name — score will be saved to data/scores.txt (Member 4)
+        // Ask player name — score saved to data/scores.txt via DataManager (Member 4)
         String name = JOptionPane.showInputDialog(
                 SwingUtilities.getWindowAncestor(this),
                 "Enter your name to record your score:",
@@ -200,144 +242,220 @@ public class QuizModule extends JPanel implements IQuiz {
                 JOptionPane.QUESTION_MESSAGE);
         playerName = (name != null && !name.trim().isEmpty()) ? name.trim() : "Player";
 
-        correctCount = 0;
-        currentQuestionIndex = 0;
-        isAnswerSubmitted = false;
+        correctCount          = 0;
+        currentQuestionIndex  = 0;
+        isAnswerSubmitted     = false;
+        remainingSeconds      = QUIZ_SECONDS;
 
-        // Restore the white card styling for question display
+        // Restore card styling
         questionContainer.setBackground(Color.WHITE);
         questionContainer.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(new Color(220, 224, 228), 1, true),
                 new EmptyBorder(25, 25, 25, 25)
         ));
 
-        Collections.shuffle(questions); // Randomise question order
+        Collections.shuffle(questions);
+        startTimer();
         showQuestion(currentQuestionIndex);
     }
 
+    // ── Timer logic ───────────────────────────────────────────────────────────
+
+    /** Starts the 120-second countdown. Auto-finishes when it hits 0. */
+    private void startTimer() {
+        stopTimer(); // ensure no old timer running
+        updateTimerDisplay();
+        quizTimer = new javax.swing.Timer(1000, e -> {
+            remainingSeconds--;
+            updateTimerDisplay();
+            if (remainingSeconds <= 0) {
+                stopTimer();
+                finishQuiz(); // time's up — auto-submit
+            }
+        });
+        quizTimer.start();
+    }
+
+    /** Stops the countdown. Safe to call even if timer is null/stopped. */
+    private void stopTimer() {
+        if (quizTimer != null && quizTimer.isRunning()) {
+            quizTimer.stop();
+        }
+    }
+
+    /** Refreshes the timer label; turns red when under 20 seconds. */
+    private void updateTimerDisplay() {
+        int m = remainingSeconds / 60;
+        int s = remainingSeconds % 60;
+        timerLabel.setText(String.format("⏱ %02d:%02d", m, s));
+        timerLabel.setForeground(remainingSeconds <= 20
+                ? new Color(220, 38, 38)   // red — hurry!
+                : new Color(26, 122, 74)); // green — fine
+    }
+
+    // ── Question display ──────────────────────────────────────────────────────
+
     private void showQuestion(int index) {
         questionContainer.removeAll();
-        isAnswerSubmitted = false; // Reset to allow clicking
-        feedbackLabel.setText(""); // Clear feedback
+        isAnswerSubmitted = false;
+        feedbackLabel.setText("");
         btnAction.setText("Submit Answer");
         btnAction.setVisible(true);
 
         if (index < questions.size()) {
-            // Update the top label (e.g., Question 1 of 20)
             progressLabel.setText("Question " + (index + 1) + " of " + questions.size());
-            
-            // Get the question object and call its render() method to draw it
             questionContainer.add(questions.get(index).render(), BorderLayout.CENTER);
         }
         questionContainer.revalidate();
         questionContainer.repaint();
     }
 
-    // Handles what happens when the main bottom button is clicked
+    // ── Answer handling ───────────────────────────────────────────────────────
+
+    /** Called every time the action button is clicked (Submit / Next / Finish). */
     private void handleAction() {
         if (!isAnswerSubmitted) {
-            // STEP 1: The user clicked "Submit"
-            Question q = questions.get(currentQuestionIndex);
-            String answer = "";
-            
-            // Look inside the class to find out what radio button they clicked
-            if (q instanceof MCQQuestion) answer = ((MCQQuestion) q).getSelectedAnswer();
+            // — Submission step —
+            Question q      = questions.get(currentQuestionIndex);
+            String answer   = "";
+            if (q instanceof MCQQuestion)       answer = ((MCQQuestion) q).getSelectedAnswer();
             else if (q instanceof TrueFalseQuestion) answer = ((TrueFalseQuestion) q).getSelectedAnswer();
 
-            // Check if it is correct
-            if (q.checkAnswer(answer)) {
-                correctCount++; // Increase score
-                feedbackLabel.setForeground(new Color(22, 163, 90)); // Green text
-                feedbackLabel.setText("✔ Correct!");
-            } else {
-                feedbackLabel.setForeground(new Color(220, 38, 38)); // Red text
-                feedbackLabel.setText("✘ Incorrect");
+            // Guard: no answer selected
+            if (answer == null || answer.trim().isEmpty()) {
+                JOptionPane.showMessageDialog(
+                        SwingUtilities.getWindowAncestor(this),
+                        "Please select an answer before submitting.",
+                        "No Answer Selected",
+                        JOptionPane.WARNING_MESSAGE);
+                return; // stay on the same question
             }
 
-            isAnswerSubmitted = true; // Lock in the answer
-            
-            // Change the button text depending on if we are at the end
-            if (currentQuestionIndex == questions.size() - 1) {
-                btnAction.setText("Finish Quiz");
+            if (q.checkAnswer(answer)) {
+                correctCount++;
+                feedbackLabel.setForeground(new Color(22, 163, 90));
+                feedbackLabel.setText("✔ Correct!");
             } else {
-                btnAction.setText("Next Question");
+                feedbackLabel.setForeground(new Color(220, 38, 38));
+                feedbackLabel.setText("✘ Incorrect");
             }
-            
+            isAnswerSubmitted = true;
+            btnAction.setText(currentQuestionIndex == questions.size() - 1
+                    ? "Finish Quiz" : "Next Question");
+
         } else {
-            // STEP 2: The user clicked "Next Question" or "Finish"
+            // — Navigation step —
             currentQuestionIndex++;
             if (currentQuestionIndex < questions.size()) {
-                showQuestion(currentQuestionIndex); // Load next
+                showQuestion(currentQuestionIndex);
             } else {
-                finishQuiz(); // Game over
+                finishQuiz();
             }
         }
     }
 
-    // Calculates final results and saves them
+    // ── Results screen ────────────────────────────────────────────────────────
+
+    /** Stops the timer, saves the score, notifies gamification, shows results. */
     private void finishQuiz() {
-        int percent = scorePercent();
+        stopTimer();
+        int timeLeft = remainingSeconds; // capture before reset
+        int percent  = scorePercent();
         String feedback = motivationalMessage(percent);
-        
-        // Save the score using Member 4's DataManager class
+
+        // Persist score — Member 4 integration
         try {
-            DataManager dm = new DataManager("data/scores.txt");
-            dm.saveScore(playerName, percent);
+            new DataManager("data/scores.txt").saveScore(playerName, percent);
         } catch (InvalidScoreException e) {
             System.err.println("Score save failed: " + e.getMessage());
         }
 
-        // Hide action button and clear the screen
-        btnAction.setVisible(false); 
+        // Notify gamification so points + badges update immediately — Member 3 integration
+        if (gamifModule != null) {
+            gamifModule.onQuizComplete(playerName, correctCount, questions.size(), timeLeft);
+        }
+
+        // Build results screen
+        btnAction.setVisible(false);
         feedbackLabel.setText("");
+        timerLabel.setText("");
         questionContainer.removeAll();
         progressLabel.setText("Your Results");
-        
-        // Build the final score screen
+
         JPanel resultsPanel = new JPanel();
         resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
         resultsPanel.setOpaque(false);
-        
-        // Huge percentage text
+
+        // Big score percentage
         JLabel scoreLabel = new JLabel(percent + "%");
-        scoreLabel.setFont(new Font("Segoe UI", Font.BOLD, 48));
+        scoreLabel.setFont(new Font("Segoe UI", Font.BOLD, 52));
         scoreLabel.setForeground(percent >= 60 ? new Color(26, 122, 74) : new Color(234, 88, 12));
         scoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        // Motivational message from rubric
+
+        // Breakdown line: N / total correct
+        JLabel breakdownLabel = new JLabel(correctCount + " / " + questions.size() + " correct");
+        breakdownLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
+        breakdownLabel.setForeground(new Color(80, 80, 80));
+        breakdownLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Motivational message
         JLabel resultLabel = new JLabel("<html><center><i>" + feedback + "</i></center></html>");
         resultLabel.setFont(new Font("SansSerif", Font.PLAIN, 18));
         resultLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        // Button to restart the game
+
+        // Time used
+        int usedSeconds = QUIZ_SECONDS - timeLeft;
+        JLabel timeLabel = new JLabel("Time used: " + usedSeconds + "s of " + QUIZ_SECONDS + "s");
+        timeLabel.setFont(new Font("SansSerif", Font.PLAIN, 13));
+        timeLabel.setForeground(new Color(120, 120, 120));
+        timeLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // Play Again button
         JButton btnRestart = new JButton("Play Again");
         btnRestart.setFont(new Font("SansSerif", Font.BOLD, 14));
         btnRestart.setBackground(new Color(26, 122, 74));
         btnRestart.setForeground(Color.WHITE);
         btnRestart.setFocusPainted(false);
         btnRestart.setAlignmentX(Component.CENTER_ALIGNMENT);
-        
-        // If clicked, go all the way back to the start screen
         btnRestart.addActionListener(e -> showStartScreen());
 
-        resultsPanel.add(Box.createVerticalStrut(30));
+        // View Leaderboard button — navigates to the Leaderboard (BADGES) tab
+        JButton btnLeaderboard = new JButton("View Leaderboard");
+        btnLeaderboard.setFont(new Font("SansSerif", Font.BOLD, 14));
+        btnLeaderboard.setBackground(new Color(63, 81, 181));
+        btnLeaderboard.setForeground(Color.WHITE);
+        btnLeaderboard.setFocusPainted(false);
+        btnLeaderboard.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnLeaderboard.addActionListener(e -> {
+            if (goToLeaderboardCallback != null) goToLeaderboardCallback.run();
+        });
+
+        // Button row
+        JPanel btnRow = new JPanel(new FlowLayout(FlowLayout.CENTER, 12, 0));
+        btnRow.setOpaque(false);
+        btnRow.add(btnRestart);
+        btnRow.add(btnLeaderboard);
+
+        resultsPanel.add(Box.createVerticalStrut(20));
         resultsPanel.add(scoreLabel);
-        resultsPanel.add(Box.createVerticalStrut(15));
+        resultsPanel.add(Box.createVerticalStrut(6));
+        resultsPanel.add(breakdownLabel);
+        resultsPanel.add(Box.createVerticalStrut(12));
         resultsPanel.add(resultLabel);
-        resultsPanel.add(Box.createVerticalStrut(40));
-        resultsPanel.add(btnRestart);
+        resultsPanel.add(Box.createVerticalStrut(8));
+        resultsPanel.add(timeLabel);
+        resultsPanel.add(Box.createVerticalStrut(30));
+        resultsPanel.add(btnRow);
 
         questionContainer.add(resultsPanel, BorderLayout.CENTER);
         questionContainer.revalidate();
         questionContainer.repaint();
     }
 
-    public JComponent getView() {
-        return this;
-    }
+    // ── IQuiz extras ─────────────────────────────────────────────────────────
 
-    // This runs every time the user clicks the "Quiz" tab at the bottom
-    public void onShow() {
-        showStartScreen(); // Always reset to the start menu when clicking the tab
-    }
+    public JComponent getView() { return this; }
+
+    /** Resets to start screen whenever the Quiz tab is tapped. */
+    public void onShow() { showStartScreen(); }
 }

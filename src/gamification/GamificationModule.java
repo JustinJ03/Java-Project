@@ -17,7 +17,9 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GamificationModule extends JPanel implements IGamification {
 
@@ -29,7 +31,6 @@ public class GamificationModule extends JPanel implements IGamification {
     private static final Font  FONT_TITLE    = new Font("SansSerif", Font.BOLD, 18);
     private static final Font  FONT_BODY     = new Font("SansSerif", Font.PLAIN, 13);
     private static final Font  FONT_SMALL    = new Font("SansSerif", Font.PLAIN, 11);
-    private static final Font  FONT_TIMER    = new Font("Monospaced", Font.BOLD, 28);
 
     // ── State ─────────────────────────────────────────────────────────────────
     private int              points = 0;
@@ -40,11 +41,6 @@ public class GamificationModule extends JPanel implements IGamification {
     private JPanel  badgesPanel;
     private JList<String> leaderboardList;
     private DefaultListModel<String> listModel;
-    private JLabel  timerLabel;
-    private JProgressBar timerBar;
-    private javax.swing.Timer swingTimer;
-    private int remainingSeconds  = 0;
-    private int totalTimerSeconds = 0;
 
     // ── Data storage (used by leaderboard) ───────────────────────────────────
     private final DataManager dataManager = new DataManager("data/scores.txt");
@@ -156,7 +152,7 @@ public class GamificationModule extends JPanel implements IGamification {
         main.setBorder(new EmptyBorder(14, 14, 14, 14));
 
         // ── NORTH: title
-        JLabel title = new JLabel("🎮  Gamification", SwingConstants.CENTER);
+        JLabel title = new JLabel("🏆  Leaderboard & Badges", SwingConstants.CENTER);
         title.setFont(FONT_TITLE);
         title.setForeground(COLOR_PRIMARY);
         main.add(title, BorderLayout.NORTH);
@@ -166,8 +162,6 @@ public class GamificationModule extends JPanel implements IGamification {
         centre.setLayout(new BoxLayout(centre, BoxLayout.Y_AXIS));
         centre.setBackground(COLOR_BG);
 
-        centre.add(buildTimerCard());
-        centre.add(Box.createVerticalStrut(10));
         centre.add(buildPointsCard());
         centre.add(Box.createVerticalStrut(10));
         centre.add(buildBadgesCard());
@@ -202,80 +196,96 @@ public class GamificationModule extends JPanel implements IGamification {
     // Public helper — called by QuizModule after quiz ends
     // =========================================================
     /**
-     * Evaluates quiz result and awards appropriate points + badges.
-     * Call this from QuizModule: gamificationModule.onQuizComplete(username, score, total, timeLeft)
+     * Evaluates quiz result and awards points + all applicable badges.
+     * Called by QuizModule immediately after the quiz ends.
      *
-     * @param score     number of correct answers
-     * @param total     total number of questions
-     * @param timeLeft  seconds remaining on the timer (0 if no timer used)
+     * OOP: cross-module integration via dependency injection (QuizModule holds
+     * a reference set by Main.java). Uses DataManager (IDataStorage polymorphism)
+     * for milestone and leaderboard badge checks.
+     *
+     * @param playerName player name entered at quiz start (for file-based checks)
+     * @param score      number of correct answers
+     * @param total      total number of questions
+     * @param timeLeft   seconds remaining when quiz ended (0 = timed out)
      */
-    public void onQuizComplete(int score, int total, int timeLeft) {
+    public void onQuizComplete(String playerName, int score, int total, int timeLeft) {
         if (total == 0) return;
-        double pct = (double) score / total * 100.0;
+        double pct     = (double) score / total * 100.0;
+        int    percent = (int) Math.round(pct);
 
-        // Award points based on percentage
-        if (pct == 100.0) {
-            addPoints(50, "Perfect score!");
+        // ── Points by score band ───────────────────────────────────────────
+        if (pct >= 100.0)      addPoints(50, "Perfect score!");
+        else if (pct >= 80.0)  addPoints(30, "High achiever (80%+)");
+        else if (pct >= 60.0)  addPoints(20, "Good result (60%+)");
+        else                   addPoints(10, "Quiz completed");
+
+        if (timeLeft > 0)
+            addPoints(timeLeft / 6, "Speed bonus (" + timeLeft + "s left)");
+
+        // ── Score badges ───────────────────────────────────────────────────
+        if (pct >= 100.0)
             awardBadge(new Badge("Perfect Score", "Scored 100% on a quiz!", "💯"));
-        } else if (pct >= 80.0) {
-            addPoints(30, "High achiever (80%+)");
+        else if (pct >= 80.0)
             awardBadge(new Badge("High Achiever", "Scored 80% or above!", "🏅"));
-        } else if (pct >= 60.0) {
-            addPoints(20, "Good result (60%+)");
-        } else {
-            addPoints(10, "Quiz completed");
-        }
+        else if (pct >= 60.0)
+            awardBadge(new Badge("Good Learner", "Scored between 60% and 79%!", "📖"));
 
-        // Speed bonus
-        if (timeLeft > 0) {
-            addPoints(10, "Speed bonus — finished with time to spare");
-            awardBadge(new Badge("Speed Runner", "Finished a timed quiz early!", "⚡"));
-        }
+        // ── Speed badges — tiered: only the best tier is awarded ───────────
+        if (timeLeft >= 60)
+            awardBadge(new Badge("Lightning Fast", "Finished in under 60 seconds!", "⚡"));
+        else if (timeLeft >= 30)
+            awardBadge(new Badge("Quick Thinker",  "Finished in under 90 seconds!", "🧠"));
+        else if (timeLeft > 0)
+            awardBadge(new Badge("Speed Runner",   "Finished before time ran out!", "🏃"));
 
-        // First quiz badge (always, if not already held)
+        // ── Completion badge (first quiz ever) ────────────────────────────
         awardBadge(new Badge("First Step", "Completed your first quiz!", "🌱"));
 
-        // Show popup with result summary
-        String msg = String.format(
-            "Quiz complete!\nScore: %d / %d  (%.0f%%)\n\nPoints earned this session: %d",
-            score, total, pct, points);
-        JOptionPane.showMessageDialog(null, msg, "Well done!", JOptionPane.INFORMATION_MESSAGE);
+        // ── File-based badges (milestone + leaderboard) ───────────────────
+        try {
+            List<String[]> allRows = dataManager.readScores();
 
-        onShow(); // refresh display
-    }
+            // Milestone: count quizzes by this player (current quiz is already saved)
+            List<String[]> playerRows = allRows.stream()
+                .filter(r -> r.length > 0 && playerName.equalsIgnoreCase(r[0]))
+                .collect(Collectors.toList());
 
-    // =========================================================
-    // Timer controls (also callable from QuizModule)
-    // =========================================================
+            int quizCount = playerRows.size();
+            if (quizCount >= 3)
+                awardBadge(new Badge("Dedicated",   "Completed 3 quizzes!", "💪"));
+            if (quizCount >= 5)
+                awardBadge(new Badge("Quiz Master", "Completed 5 quizzes!", "🎓"));
 
-    /** Starts a countdown timer for the given number of seconds. */
-    public void startTimer(int seconds) {
-        stopTimer();
-        totalTimerSeconds = seconds;
-        remainingSeconds  = seconds;
-        updateTimerDisplay();
-
-        swingTimer = new javax.swing.Timer(1000, e -> {
-            remainingSeconds--;
-            updateTimerDisplay();
-            if (remainingSeconds <= 0) {
-                stopTimer();
-                timerLabel.setText("⏰  Time's Up!");
-                timerLabel.setForeground(Color.RED);
+            // Comeback: current score beats the player's previous personal best
+            if (quizCount >= 2) {
+                // All entries except the most recently added one = previous history
+                int prevBest = playerRows.subList(0, quizCount - 1)
+                    .stream()
+                    .mapToInt(r -> parseSafe(r.length > 1 ? r[1] : "0"))
+                    .max().orElse(0);
+                if (percent > prevBest)
+                    awardBadge(new Badge("Comeback", "Improved your personal best!", "🔄"));
             }
-        });
-        swingTimer.start();
-    }
 
-    /** Stops the countdown timer. */
-    public void stopTimer() {
-        if (swingTimer != null && swingTimer.isRunning()) {
-            swingTimer.stop();
+            // Top Scorer: this score is the highest ever recorded across all players
+            int allTimeBest = allRows.stream()
+                .mapToInt(r -> parseSafe(r.length > 1 ? r[1] : "0"))
+                .max().orElse(0);
+            if (percent >= allTimeBest && allTimeBest > 0)
+                awardBadge(new Badge("Top Scorer", "Highest score on the leaderboard!", "👑"));
+
+        } catch (Exception e) {
+            System.err.println("Badge check skipped: " + e.getMessage());
         }
+
+        onShow(); // refresh leaderboard + badges display
     }
 
-    /** Returns seconds remaining on the current timer. */
-    public int getRemainingTime() { return remainingSeconds; }
+    /** Safe integer parse — returns 0 on error (used for score fields from CSV). */
+    private int parseSafe(String s) {
+        try { return Integer.parseInt(s.trim()); }
+        catch (NumberFormatException e) { return 0; }
+    }
 
     // ── Private helpers ───────────────────────────────────────────────────────
 
@@ -334,61 +344,7 @@ public class GamificationModule extends JPanel implements IGamification {
         }
     }
 
-    private void updateTimerDisplay() {
-        if (timerLabel == null) return;
-        int m = remainingSeconds / 60, s = remainingSeconds % 60;
-        timerLabel.setText(String.format("%02d:%02d", m, s));
-
-        if (totalTimerSeconds > 0) {
-            int pct = (int) ((double) remainingSeconds / totalTimerSeconds * 100);
-            timerBar.setValue(pct);
-            if (remainingSeconds > totalTimerSeconds * 0.5) {
-                timerLabel.setForeground(COLOR_SUCCESS);
-                timerBar.setForeground(COLOR_SUCCESS);
-            } else if (remainingSeconds > totalTimerSeconds * 0.25) {
-                timerLabel.setForeground(new Color(255, 152, 0));
-                timerBar.setForeground(new Color(255, 152, 0));
-            } else {
-                timerLabel.setForeground(new Color(211, 47, 47));
-                timerBar.setForeground(new Color(211, 47, 47));
-            }
-        }
-    }
-
     // ── Card builders ─────────────────────────────────────────────────────────
-
-    private JPanel buildTimerCard() {
-        JPanel card = createCard("⏱  Quiz Timer");
-
-        timerLabel = new JLabel("00:00", SwingConstants.CENTER);
-        timerLabel.setFont(FONT_TIMER);
-        timerLabel.setForeground(COLOR_PRIMARY);
-        timerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        timerBar = new JProgressBar(0, 100);
-        timerBar.setValue(0);
-        timerBar.setForeground(COLOR_SUCCESS);
-        timerBar.setBackground(new Color(220, 220, 220));
-        timerBar.setMaximumSize(new Dimension(320, 10));
-        timerBar.setAlignmentX(Component.CENTER_ALIGNMENT);
-
-        JButton btnStart = makeButton("▶  Start (60s)", COLOR_PRIMARY);
-        JButton btnStop  = makeButton("■  Stop",        new Color(211, 47, 47));
-        btnStart.addActionListener(e -> startTimer(60));
-        btnStop .addActionListener(e -> stopTimer());
-
-        JPanel row = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 0));
-        row.setOpaque(false);
-        row.add(btnStart);
-        row.add(btnStop);
-
-        card.add(timerLabel);
-        card.add(Box.createVerticalStrut(6));
-        card.add(timerBar);
-        card.add(Box.createVerticalStrut(8));
-        card.add(row);
-        return card;
-    }
 
     private JPanel buildPointsCard() {
         JPanel card = createCard("⭐  Your Points");

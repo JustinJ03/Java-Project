@@ -25,7 +25,7 @@ public class Main extends JFrame {
     static final int   HEIGHT = 820;
     static final Color GREEN = new Color(26, 122, 74);
 
-    /** Vivid accent colour for each bottom tab (Learn, Quiz, Badges, Profile). */
+    /** Vivid accent colour for each bottom tab (Learn, Quiz, Leaderboard, Profile). */
     static final Color[] TAB_COLORS = {
         new Color(22, 163, 90),
         new Color(59, 130, 246),
@@ -62,8 +62,11 @@ public class Main extends JFrame {
         quizModule     = new QuizModule();                                        // Member 2
         gamifModule    = new GamificationModule();                               // Member 3
         profilePanel   = new ProfilePanel();                                     // Member 4
-        // dataManager = new DataManager("data/scores.txt");    // Member 4
-        // userProfile = dataManager.loadProfile("Player1");    // Member 4
+
+        // Wire quiz → gamification: points/badges update the moment a quiz ends
+        quizModule.setGamificationModule(gamifModule);
+        // Wire quiz → navigation: "View Leaderboard" button jumps to tab 2 (BADGES/Leaderboard)
+        quizModule.setGoToLeaderboardCallback(() -> showTab(2));
     }
 
     void buildUI() {
@@ -90,7 +93,7 @@ public class Main extends JFrame {
             new EmptyBorder(6, 10, 10, 10)));
         bar.setPreferredSize(new Dimension(0, 72));
 
-        String[] labels = { "Learn", "Quiz", "Badges", "Profile" };
+        String[] labels = { "Learn", "Quiz", "Leaderboard", "Profile" };
 
         for (int i = 0; i < 4; i++) {
             final int idx = i;
