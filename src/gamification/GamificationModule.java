@@ -144,7 +144,6 @@ public class GamificationModule extends JPanel implements IGamification {
      * OOP NOTE: Previously overrode AppModule.getView(). Now GamificationModule extends JPanel,
      *           so build the UI directly in the constructor or an init() method.
      */
-    @Override
     public JComponent getView() {
         // TODO(Member 3): This method is for backward compatibility. Build UI in constructor instead.
         return new JPanel();
@@ -162,7 +161,6 @@ public class GamificationModule extends JPanel implements IGamification {
      *
      * OOP NOTE: Overrides AppModule.onShow().
      */
-    @Override
     public void onShow() {
         // TODO(Member 3): optionally refresh leaderboard display.
     }

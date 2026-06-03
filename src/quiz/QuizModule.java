@@ -155,7 +155,6 @@ public class QuizModule extends JPanel implements IQuiz {
      * OOP NOTE: Previously overrode AppModule.getView(). Now QuizModule extends JPanel,
      *           so build the UI directly in the constructor or an init() method.
      */
-    @Override
     public JComponent getView() {
         // TODO(Member 2): This method is for backward compatibility. Build UI in constructor instead.
         return new JPanel();
@@ -173,7 +172,6 @@ public class QuizModule extends JPanel implements IQuiz {
      *
      * OOP NOTE: Overrides AppModule.onShow().
      */
-    @Override
     public void onShow() {
         // TODO(Member 2): optionally reset correctCount and clear questions for a fresh quiz.
     }

@@ -11,7 +11,6 @@ import quiz.MCQQuestion;
 import quiz.QuizModule;
 import quiz.TrueFalseQuestion;
 import data.DataManager;
-import app.AppContext;
 import java.io.File;
 import java.util.Arrays;
 
@@ -29,7 +28,7 @@ public class ManualTests {
         check("TF wrong",   !tf.checkAnswer("false"));
 
         // -- Member 2: motivationalMessage scale --
-        QuizModule qm = new QuizModule(new AppContext());
+        QuizModule qm = new QuizModule();
         check("90%  -> Outstanding!",      "Outstanding!".equals(qm.motivationalMessage(90)));
         check("65%  -> That's good!",      "That's good!".equals(qm.motivationalMessage(65)));
         check("45%  -> Good try!",         "Good try!".equals(qm.motivationalMessage(45)));
