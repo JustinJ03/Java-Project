@@ -8,10 +8,6 @@
 // Also usable as a utility: import tests.DebugHelper; then call static methods.
 package tests;
 
-import app.AppContext;
-import app.HomeScreen;
-import app.Navigator;
-import gamification.GamificationModule;
 import interfaces.IDataStorage;
 import learning.ContentPage;
 import learning.LearningModule;
@@ -105,7 +101,7 @@ public class DebugHelper {
     // ------------------------------------------------------------------
     public static void dumpQuestions() {
         System.out.println("\n[QUIZ] Loading questions from resources/quiz/questions.txt ...");
-        QuizModule qm = new QuizModule(new AppContext());
+        QuizModule qm = new QuizModule();
         List<Question> questions = qm.loadQuestions();
         if (questions.isEmpty()) {
             System.out.println("      0 questions loaded.");
@@ -128,13 +124,12 @@ public class DebugHelper {
     // 5. Dump learning pages
     // ------------------------------------------------------------------
     public static void dumpLearningPages() {
-        System.out.println("\n[LEARN] Loading pages from resources/learning/content.txt ...");
-        LearningModule lm = new LearningModule(new AppContext());
-        List<ContentPage> pages = lm.loadPages();
+        System.out.println("\n[LEARN] Loading pages from LearningModule ...");
+        LearningModule lm = new LearningModule("Quality Education", "SDG 4");
+        List<ContentPage> pages = lm.getAllPages();
         if (pages.isEmpty()) {
             System.out.println("      0 pages loaded.");
-            System.out.println("      Check: (a) content.txt is renamed, (b) Member 1's");
-            System.out.println("      loadPages() TODO is implemented.");
+            System.out.println("      Check Member 1's LearningModule implementation.");
         } else {
             System.out.println("      " + pages.size() + " page(s) loaded.");
             if (pages.size() < 10) System.out.println("      WARNING: <10 pages loaded. Requirement is >=10.");
@@ -168,26 +163,20 @@ public class DebugHelper {
     }
 
     // ------------------------------------------------------------------
-    // 7. Test module navigation (registers all screens before navigating)
+    // 7. Test module instantiation (navigation now in Main's bottom tab bar)
     // ------------------------------------------------------------------
     public static void testNavigation() {
-        System.out.println("\n[NAV] Testing module navigation ...");
+        System.out.println("\n[NAV] Testing module instantiation ...");
         try {
-            AppContext ctx  = new AppContext();
-            Navigator   nav = ctx.navigator();
+            // Simple instantiation check - navigation is now Main's bottom tab bar
+            LearningModule lm = new LearningModule("Quality Education", "SDG 4");
+            QuizModule qm = new QuizModule();
 
-            // Register home screen so show("home") has a real card to switch to
-            nav.registerScreen("home", new HomeScreen(ctx));
-            nav.registerModule(new LearningModule(ctx));
-            nav.registerModule(new QuizModule(ctx));
-            nav.registerModule(new GamificationModule(ctx));
-
-            nav.show("Learning");    System.out.println("      OK   navigate to Learning");
-            nav.show("Quiz");        System.out.println("      OK   navigate to Quiz");
-            nav.show("Gamification");System.out.println("      OK   navigate to Gamification");
-            nav.show("home");        System.out.println("      OK   navigate to home");
+            System.out.println("      OK   LearningModule instantiated");
+            System.out.println("      OK   QuizModule instantiated");
+            System.out.println("      NOTE Navigation is now handled by Main's bottom tab bar");
         } catch (Exception e) {
-            System.out.println("      ERROR during navigation: " + e);
+            System.out.println("      ERROR during instantiation: " + e);
             e.printStackTrace();
         }
     }
@@ -220,7 +209,7 @@ public class DebugHelper {
         System.out.println("Pages (" + pages.size() + "):");
         for (int i = 0; i < pages.size(); i++) {
             ContentPage p = pages.get(i);
-            String body = p.getBody() != null ? p.getBody() : "(null)";
+            String body = p.getBodyText() != null ? p.getBodyText() : "(null)";
             String preview = body.substring(0, Math.min(60, body.length()));
             System.out.println("  [" + i + "] " + p.getTitle());
             System.out.println("      " + preview + (body.length() > 60 ? "..." : ""));
