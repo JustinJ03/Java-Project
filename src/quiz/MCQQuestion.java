@@ -1,8 +1,9 @@
 package quiz;
 
-import javax.swing.*;
 import java.awt.*;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 public class MCQQuestion extends Question {
 
@@ -36,24 +37,29 @@ public class MCQQuestion extends Question {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         panel.setOpaque(false);
+        panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        JLabel promptLabel = new JLabel("<html><p style='width:350px; font-size:14px; margin-bottom:10px;'>" 
+        // Larger, bolder question text
+        JLabel promptLabel = new JLabel("<html><p style='width:250px; font-size:16px; font-family: sans-serif; font-weight: bold; color: #2C3E50; margin-bottom:15px;'>" 
                                         + prompt + "</p></html>");
         panel.add(promptLabel);
+        panel.add(Box.createVerticalStrut(10));
 
         ButtonGroup group = new ButtonGroup();
+        
+        // MCQQuestion.java loop:
         for (String option : options) {
             JRadioButton rb = new JRadioButton(option);
-            rb.setFont(new Font("SansSerif", Font.PLAIN, 13));
+            rb.setFont(new Font("SansSerif", Font.PLAIN, 15));
+            rb.setForeground(new Color(60, 60, 60));
             rb.setOpaque(false);
-            
-            // Update the local state whenever a radio button is clicked
+            rb.setCursor(new Cursor(Cursor.HAND_CURSOR));
+            rb.setBorder(new EmptyBorder(5, 5, 5, 5));
             rb.addActionListener(e -> selectedAnswer = option);
-            
             group.add(rb);
             panel.add(rb);
+            panel.add(Box.createVerticalStrut(8)); // Adds spacing between options
         }
-
         return panel;
     }
 
