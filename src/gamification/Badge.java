@@ -1,39 +1,68 @@
 package gamification;
 
 /**
- * TASK: Member 3 - Badge Model
+ * Badge.java
+ * Represents a reward badge earned by the player in the EduSDG application.
  *
- * PURPOSE:
- *   Represents a reward badge earned by the player.
- *   Badges are awarded when the player reaches point thresholds.
+ * Badges are awarded when the player reaches point thresholds or completes
+ * quiz milestones inside GamificationModule.
  *
- * OOP CONCEPTS TO DEMONSTRATE:
- *   - Constructor overloading: two constructors -- Badge(name) and
- *     Badge(name, description). The one-argument version delegates
- *     to the two-argument one with an empty description string.
+ * OOP CONCEPTS DEMONSTRATED:
+ *   - Constructor overloading: three constructors, each delegating upward
+ *     to the full three-argument constructor.
  *
- * THIS FILE IS COMPLETE -- no logic left to write.
- * You may add extra fields (e.g. an icon path) if your UI needs them.
+ * Creator  : Member 3
  */
 public class Badge {
 
     // === FIELDS ===
     private final String name;
     private final String description;
+    private final String icon;          // emoji shown in the GUI
 
-    // === CONSTRUCTOR OVERLOADING (OOP requirement) ===
-    // One-argument version: no description provided
+    // === CONSTRUCTOR OVERLOADING ===
+
+    /** One-arg: name only — no description, default icon. */
     public Badge(String name) {
-        this(name, ""); // delegates to full constructor
+        this(name, "", "🏅");
     }
 
-    // Two-argument version: full constructor
+    /** Two-arg: name + description — default icon. */
     public Badge(String name, String description) {
+        this(name, description, "🏅");
+    }
+
+    /** Three-arg: full constructor — all fields set here. */
+    public Badge(String name, String description, String icon) {
         this.name        = name;
         this.description = description;
+        this.icon        = icon;
     }
 
     // === GETTERS ===
     public String getName()        { return name; }
     public String getDescription() { return description; }
+    public String getIcon()        { return icon; }
+
+    // === OVERRIDES ===
+
+    /** Two badges are equal if they share the same name (case-insensitive).
+     *  Used by hasBadge() in GamificationModule to prevent duplicates. */
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Badge)) return false;
+        return this.name.equalsIgnoreCase(((Badge) obj).name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.toLowerCase().hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return icon + " " + name + " — " + description;
+    }
 }
+
