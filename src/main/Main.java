@@ -1,5 +1,6 @@
 package main;
 
+import gamification.GamificationModule;
 import learning.LearningModule;
 import learning.LearningModulePanel;
 import java.awt.*;
@@ -34,11 +35,11 @@ public class Main extends JFrame {
     JPanel     cardPanel;
     JButton[]  tabBtns = new JButton[4];
 
-    LearningModule learningModule;      // Member 1
-    // QuizModule        quizModule;     // Member 2
-    // GamificationModule gamifModule;  // Member 3
-    // DataManager       dataManager;   // Member 4
-    // UserProfile       userProfile;   // Member 4
+    LearningModule     learningModule;      // Member 1
+    // QuizModule      quizModule;          // Member 2 (uncomment when ready)
+    GamificationModule gamifModule;         // Member 3
+    // DataManager     dataManager;         // Member 4
+    // UserProfile     userProfile;         // Member 4
 
     public Main() {
         super("SDG 4 - Quality Education");
@@ -57,10 +58,10 @@ public class Main extends JFrame {
 
     void initModels() {
         learningModule = new LearningModule("Quality Education", "SDG 4");      // Member 1
-        // dataManager = new DataManager("scores.txt");         // Member 4
+        gamifModule    = new GamificationModule();                               // Member 3
+        // quizModule  = new QuizModule();                      // Member 2 (uncomment when ready)
+        // dataManager = new DataManager("data/scores.txt");    // Member 4
         // userProfile = dataManager.loadProfile("Player1");    // Member 4
-        // quizModule  = new QuizModule(learningModule);        // Member 2
-        // gamifModule = new GamificationModule(userProfile);   // Member 3
     }
 
     void buildUI() {
@@ -76,9 +77,7 @@ public class Main extends JFrame {
         cardPanel.add(makePlaceholder("Quiz Module",
                 "Member 2 — QuizModule + Question\n(IQuiz interface)",
                 1), "QUIZ");
-        cardPanel.add(makePlaceholder("Badges & Rewards",
-                "Member 3 — GamificationModule + Badge\n(IGamification interface)",
-                2), "BADGES");
+        cardPanel.add(gamifModule.getView(), "BADGES");          // Member 3 (LIVE)
         cardPanel.add(makePlaceholder("My Profile",
                 "Member 4 — DataManager + UserProfile\n(IDataStorage interface)",
                 3), "PROFILE");
@@ -150,6 +149,8 @@ public class Main extends JFrame {
     void showTab(int idx) {
         String[] cards = { "LEARN", "QUIZ", "BADGES", "PROFILE" };
         cardLayout.show(cardPanel, cards[idx]);
+        // Notify active modules so they can refresh their display
+        if (idx == 2 && gamifModule != null) gamifModule.onShow();
         for (int i = 0; i < tabBtns.length; i++) {
             boolean active = (i == idx);
             Color c = TAB_COLORS[i];

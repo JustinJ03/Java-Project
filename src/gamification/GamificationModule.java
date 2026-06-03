@@ -19,7 +19,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class GamificationModule extends AppModule implements IGamification {
+public class GamificationModule extends JPanel implements IGamification {
 
     // ── Constants ─────────────────────────────────────────────────────────────
     private static final Color COLOR_BG      = new Color(245, 248, 255);
@@ -46,9 +46,13 @@ public class GamificationModule extends AppModule implements IGamification {
     private int remainingSeconds  = 0;
     private int totalTimerSeconds = 0;
 
+    // ── Data storage (used by leaderboard) ───────────────────────────────────
+    private final DataManager dataManager = new DataManager("data/scores.txt");
+
     // ── Constructor ───────────────────────────────────────────────────────────
-    public GamificationModule(AppContext ctx) {
-        super(ctx, "Gamification");
+    /** Default constructor — add this module to Main's CardLayout via getView(). */
+    public GamificationModule() {
+        super();
     }
 
     // =========================================================
@@ -104,7 +108,7 @@ public class GamificationModule extends AppModule implements IGamification {
     /**
      * Reads all saved scores via Member 4's IDataStorage, sorts them
      * highest-first, and returns formatted strings.
-     * OOP: uses IDataStorage through polymorphism (ctx.storage()).
+     * OOP: uses IDataStorage through polymorphism (DataManager implements IDataStorage).
      * OOP: demonstrates exception handling with DataNotFoundException.
      */
     @Override
@@ -113,7 +117,7 @@ public class GamificationModule extends AppModule implements IGamification {
 
         // STEP 1: Read scores — catch DataNotFoundException if file is missing/empty
         try {
-            rows = ctx.storage().readScores();
+            rows = dataManager.readScores();
         } catch (DataNotFoundException e) {
             System.out.println("Leaderboard: no scores found. (" + e.getMessage() + ")");
             return new ArrayList<>();
