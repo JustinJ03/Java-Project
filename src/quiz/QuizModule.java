@@ -22,7 +22,8 @@ public class QuizModule extends JPanel implements IQuiz {
     private final List<Question> questions = new ArrayList<>();
     private int correctCount = 0;
     private int currentQuestionIndex = 0;
-    private boolean isAnswerSubmitted = false; 
+    private boolean isAnswerSubmitted = false;
+    private String playerName = "Player"; // set when player enters name before the quiz
 
     // Visual UI components for the screen
     private JPanel questionContainer; 
@@ -83,8 +84,12 @@ public class QuizModule extends JPanel implements IQuiz {
         add(bottomPanel, BorderLayout.SOUTH);
 
         // Read the text file and show the welcome page
-        loadQuestions();
-        showStartScreen(); 
+        try {
+            loadQuestions();
+        } catch (ContentLoadException e) {
+            System.err.println("Warning: Could not load questions — " + e.getMessage());
+        }
+        showStartScreen();
     }
 
     // Reads questions.txt and turns them into Java objects
@@ -118,8 +123,8 @@ public class QuizModule extends JPanel implements IQuiz {
                 }
             }
         } catch (IOException e) {
-            // Stop the program if the file is missing
-            throw new RuntimeException(new ContentLoadException("Cannot load questions", e));
+            // Propagate as ContentLoadException so callers can handle it properly
+            throw new ContentLoadException("Cannot load questions from resources/quiz/questions.txt", e);
         }
         return questions;
     }
@@ -185,21 +190,28 @@ public class QuizModule extends JPanel implements IQuiz {
         questionContainer.repaint();
     }
 
-<<<<<<< HEAD
-    // Prompt for the player's name, then start the quiz
+    // Ask player name, reset state, then start the quiz
     private void startQuiz() {
-        // Member 4 integration: ask for player name; score will be saved to data/scores.txt
-        correctCount = 0; // Reset score
-        currentQuestionIndex = 0; // Start at question 1
-        
-        // Turn the center panel back into a white card
+        // Prompt for player name — score will be saved to data/scores.txt (Member 4)
+        String name = JOptionPane.showInputDialog(
+                SwingUtilities.getWindowAncestor(this),
+                "Enter your name to record your score:",
+                "Player Name",
+                JOptionPane.QUESTION_MESSAGE);
+        playerName = (name != null && !name.trim().isEmpty()) ? name.trim() : "Player";
+
+        correctCount = 0;
+        currentQuestionIndex = 0;
+        isAnswerSubmitted = false;
+
+        // Restore the white card styling for question display
         questionContainer.setBackground(Color.WHITE);
         questionContainer.setBorder(BorderFactory.createCompoundBorder(
                 new LineBorder(new Color(220, 224, 228), 1, true),
                 new EmptyBorder(25, 25, 25, 25)
         ));
-        
->>>>>>> bee73852207a9b2914917c0268c1c8dacf3702d8
+
+        Collections.shuffle(questions); // Randomise question order
         showQuestion(currentQuestionIndex);
     }
 
@@ -272,7 +284,7 @@ public class QuizModule extends JPanel implements IQuiz {
             DataManager dm = new DataManager("data/scores.txt");
             dm.saveScore(playerName, percent);
         } catch (InvalidScoreException e) {
-            e.printStackTrace(); // Print error if something breaks
+            System.err.println("Score save failed: " + e.getMessage());
         }
 
         // Hide action button and clear the screen
