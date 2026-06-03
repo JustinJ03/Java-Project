@@ -1,7 +1,5 @@
 package quiz;
 
-import app.AppContext;
-import app.AppModule;
 import data.exceptions.ContentLoadException;
 import data.exceptions.InvalidScoreException;
 import interfaces.IQuiz;
@@ -20,26 +18,30 @@ import java.util.List;
  *   calculates the player's score, shows a motivational message, and
  *   saves the result via DataManager.
  *
- * EXTENDS: AppModule  -- gives you getName(), onShow(), placeholder() helper.
+ * EXTENDS: JPanel     -- lightweight Swing container for Main's CardLayout
  * IMPLEMENTS: IQuiz   -- loadQuestions(), scorePercent(), motivationalMessage().
  *
  * OOP CONCEPTS TO DEMONSTRATE:
- *   - Inheritance     : extends AppModule
- *   - Overriding      : getView(), onShow(), and all IQuiz methods
+ *   - Inheritance     : extends JPanel
+ *   - Overriding      : all IQuiz methods
  *   - Polymorphism    : the questions list holds Question objects; checkAnswer()
  *                       and render() dispatch to MCQQuestion or TrueFalseQuestion
  *                       at runtime without the QuizModule knowing the concrete type
  *   - Exception handling : InvalidScoreException, ContentLoadException
  */
-public class QuizModule extends AppModule implements IQuiz {
+public class QuizModule extends JPanel implements IQuiz {
 
     // === FIELDS ===
     private final List<Question> questions = new ArrayList<>();
     private int correctCount = 0; // tracks how many answers were correct
 
     // === CONSTRUCTOR ===
-    public QuizModule(AppContext ctx) {
-        super(ctx, "Quiz");
+    /**
+     * No-arg constructor required for Main's CardLayout management.
+     * Main instantiates modules directly and adds them to the CardLayout.
+     */
+    public QuizModule() {
+        super();
     }
 
     // =========================================================
@@ -126,7 +128,7 @@ public class QuizModule extends AppModule implements IQuiz {
     }
 
     // =========================================================
-    // METHOD: getView()  [OVERRIDE -- required by IModule]
+    // METHOD: getView()  [DEPRECATED -- QuizModule now IS a JPanel]
     // =========================================================
     /**
      * Builds and returns the Quiz Module's Swing panel.
@@ -144,18 +146,19 @@ public class QuizModule extends AppModule implements IQuiz {
      *             c. If correct: correctCount++;
      *             d. Advance to the next question. If no more questions:
      *                  - Show score: scorePercent() + "%" + motivationalMessage(scorePercent())
-     *                  - Save score: try { ctx.storage().saveScore("Player", scorePercent()); }
+     *                  - Save score: try { DataManager.getInstance().saveScore("Player", scorePercent()); }
      *                                catch (InvalidScoreException e) { e.printStackTrace(); }
-     *                  - Optionally trigger gamification: ctx can be used to access storage.
+     *                  - Optionally trigger gamification via DataManager.
      *
      *   STEP 4: Return the main panel.
      *
-     * OOP NOTE: Overrides AppModule.getView() -- overriding + polymorphism via IModule.
+     * OOP NOTE: Previously overrode AppModule.getView(). Now QuizModule extends JPanel,
+     *           so build the UI directly in the constructor or an init() method.
      */
     @Override
     public JComponent getView() {
-        // TODO(Member 2): implement using the steps above.
-        return placeholder("Quiz: implement getView() -- see comments above.");
+        // TODO(Member 2): This method is for backward compatibility. Build UI in constructor instead.
+        return new JPanel();
     }
 
     // =========================================================
