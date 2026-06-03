@@ -58,7 +58,7 @@ public class LearningModule implements IModule {
             "SDG 4 is about ensuring inclusive and equitable quality education and promoting lifelong " +
             "learning opportunities for all. Education is more than attending school; it means effective " +
             "teaching, safe environments, and opportunities that nurture creativity and critical thinking.",
-            "images/sdg4_intro.png",
+            "resources/learning/images/sdg4_intro.png",
             "Key Fact: Education is a fundamental human right recognized by the United Nations."
         ));
 
@@ -68,7 +68,7 @@ public class LearningModule implements IModule {
             "positively to their communities. It builds knowledge, confidence, and skills needed for " +
             "employment and innovation. When education is inclusive, societies become more stable and " +
             "prosperous.",
-            "images/literacy_map.png",
+            "resources/learning/images/literacy_map.png",
             "Key Fact: Each additional year of schooling can increase a person's income by up to 10 percent."
         ));
 
@@ -78,7 +78,7 @@ public class LearningModule implements IModule {
             "poverty, child labour, gender inequality, conflict and displacement, disability without adequate " +
             "support, and schools that are too far away or unsafe. Removing these barriers is essential to " +
             "achieving SDG 4.",
-            "images/barriers.png",
+            "resources/learning/images/barriers.png",
             "Key Fact: UNICEF estimates that 244 million children and youth are out of school worldwide."
         ));
 
@@ -87,7 +87,7 @@ public class LearningModule implements IModule {
             "Teachers are the heart of education. Skilled and motivated educators create inclusive " +
             "classrooms and inspire students to learn. Investing in teacher training, fair pay, and " +
             "professional development ensures that every learner receives quality instruction.",
-            "images/inclusive.png",
+            "resources/learning/images/inclusive.png",
             "Key Fact: SDG 4 aims to substantially increase the supply of qualified teachers, especially in developing countries."
         ));
 
@@ -96,7 +96,7 @@ public class LearningModule implements IModule {
             "Digital tools make education more accessible and interactive. Online platforms, educational " +
             "apps, and virtual classrooms allow students to learn anytime and anywhere. Technology also " +
             "helps bridge gaps for learners in remote areas and those with disabilities.",
-            "images/ece.png",
+            "resources/learning/images/ece.png",
             "Key Fact: During the COVID-19 pandemic, e-learning platforms reached over one billion users globally."
         ));
 
@@ -105,7 +105,7 @@ public class LearningModule implements IModule {
             "Gender inequality remains a major barrier to education. In some regions, girls face cultural " +
             "restrictions, early marriage, or unsafe school environments. Promoting gender equality ensures " +
             "that both girls and boys have equal opportunities to learn and succeed.",
-            "images/teachers.png",
+            "resources/learning/images/teachers.png",
             "Key Fact: Educated women are more likely to participate in decision-making and improve community well-being."
         ));
 
@@ -114,7 +114,7 @@ public class LearningModule implements IModule {
             "Inclusive education means adapting teaching methods, materials, and environments so that all " +
             "learners, including those with disabilities, can participate fully. Accessibility features such as " +
             "ramps, assistive technology, and supportive teachers make learning possible for everyone.",
-            "images/digital.png",
+            "resources/learning/images/digital.png",
             "Key Fact: SDG 4 emphasizes equal access to education for persons with disabilities and those in vulnerable situations."
         ));
 
@@ -123,7 +123,7 @@ public class LearningModule implements IModule {
             "Learning does not end after school. Lifelong learning helps people adapt to changes in " +
             "technology, work, and society. It includes vocational training, adult education, and community " +
             "workshops that keep skills relevant throughout life.",
-            "images/financing.png",
+            "resources/learning/images/financing.png",
             "Key Fact: Continuous learning supports innovation and sustainable development."
         ));
 
@@ -132,7 +132,7 @@ public class LearningModule implements IModule {
             "Achieving SDG 4 requires collaboration among governments, NGOs, educators, and " +
             "communities. Partnerships help fund schools, train teachers, and share best practices across " +
             "countries. Working together ensures that no learner is left behind.",
-            "images/malaysia.png",
+            "resources/learning/images/malaysia.png",
             "Key Fact: The Global Partnership for Education supports more than 80 countries in improving access and quality of education."
         ));
 
@@ -141,7 +141,7 @@ public class LearningModule implements IModule {
             "The future of education focuses on creativity, critical thinking, and sustainability. Schools must " +
             "prepare students to solve global challenges such as climate change and inequality. Innovative " +
             "teaching methods and technology will make learning more personalized and inclusive.",
-            "images/action.png",
+            "resources/learning/images/action.png",
             "Key Fact: By 2030, SDG 4 aims for universal access to free, equitable, and quality primary and secondary education for all children."
         ));
     }
