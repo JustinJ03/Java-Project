@@ -6,19 +6,16 @@ import javax.swing.JComponent;
  * TASK: Member 2 - Abstract Question Base Class
  *
  * PURPOSE:
- *   Abstract superclass for all question types (MCQ, True/False).
- *   Defines the common contract: every question has a prompt, can check
- *   an answer, and can render itself as a Swing component.
+ * Abstract superclass for all question types (MCQ, True/False).
+ * Defines the common contract: every question has a prompt, can check
+ * an answer, and can render itself as a Swing component.
  *
  * OOP CONCEPTS TO DEMONSTRATE:
- *   - Abstraction   : abstract class with abstract methods
- *   - Inheritance   : MCQQuestion and TrueFalseQuestion both extend this
- *   - Polymorphism  : QuizModule loops over List<Question>, calling
- *                     checkAnswer() and render() on each -- the JVM
- *                     dispatches to the correct subclass at runtime.
- *
- * THIS FILE IS COMPLETE -- both abstract methods are declared here.
- * Implement them in MCQQuestion and TrueFalseQuestion.
+ * - Abstraction   : abstract class with abstract methods
+ * - Inheritance   : MCQQuestion and TrueFalseQuestion both extend this
+ * - Polymorphism  : QuizModule loops over List<Question>, calling
+ * checkAnswer() and render() on each -- the JVM
+ * dispatches to the correct subclass at runtime.
  */
 public abstract class Question {
 
@@ -31,7 +28,9 @@ public abstract class Question {
     }
 
     // === GETTER ===
-    public String getPrompt() { return prompt; }
+    public String getPrompt() { 
+        return prompt; 
+    }
 
     // =========================================================
     // ABSTRACT METHOD: checkAnswer(String response)
@@ -40,11 +39,8 @@ public abstract class Question {
      * Returns true if the player's response is correct.
      *
      * Each subclass decides what "correct" means:
-     *   - MCQQuestion  : response matches the option text at correctIndex
-     *   - TrueFalseQuestion : response is "true" or "false" (case-insensitive)
-     *
-     * OOP NOTE: Overriding this method in each subclass demonstrates
-     *           method overriding and runtime polymorphism.
+     * - MCQQuestion  : response matches the option text at correctIndex
+     * - TrueFalseQuestion : response is "true" or "false" (case-insensitive)
      */
     public abstract boolean checkAnswer(String response);
 
@@ -55,11 +51,8 @@ public abstract class Question {
      * Builds and returns a Swing panel representing this question's UI.
      *
      * Each subclass renders itself differently:
-     *   - MCQQuestion      : prompt + radio buttons for each option
-     *   - TrueFalseQuestion: prompt + True and False buttons
-     *
-     * OOP NOTE: Another example of overriding. QuizModule calls render()
-     *           without knowing which subclass it is -- polymorphism.
+     * - MCQQuestion      : prompt + radio buttons for each option
+     * - TrueFalseQuestion: prompt + True and False buttons
      */
     public abstract JComponent render();
 }

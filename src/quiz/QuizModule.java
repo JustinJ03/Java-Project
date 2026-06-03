@@ -4,16 +4,16 @@ import data.DataManager;
 import data.exceptions.ContentLoadException;
 import data.exceptions.InvalidScoreException;
 import interfaces.IQuiz;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 public class QuizModule extends JPanel implements IQuiz {
 
@@ -36,7 +36,7 @@ public class QuizModule extends JPanel implements IQuiz {
         questionContainer = new JPanel(new BorderLayout());
         questionContainer.setOpaque(false);
 
-        progressLabel = new JLabel("Question 1 / 0");
+        progressLabel = new JLabel("");
         progressLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
         progressLabel.setForeground(new Color(26, 122, 74));
 
@@ -44,6 +44,7 @@ public class QuizModule extends JPanel implements IQuiz {
         btnNext.setBackground(new Color(26, 122, 74));
         btnNext.setForeground(Color.WHITE);
         btnNext.setFocusPainted(false);
+        btnNext.setVisible(false); // hidden until the quiz actually starts
         btnNext.addActionListener(e -> advanceQuestion());
 
         JPanel headerPanel = new JPanel(new BorderLayout());
@@ -55,9 +56,9 @@ public class QuizModule extends JPanel implements IQuiz {
         add(questionContainer, BorderLayout.CENTER);
         add(btnNext, BorderLayout.SOUTH);
 
-        // Load data and start quiz
+        // Load data and show the start screen instead of the first question
         loadQuestions();
-        showQuestion(0);
+        showStartScreen(); 
     }
 
     @Override
@@ -83,7 +84,6 @@ public class QuizModule extends JPanel implements IQuiz {
                 }
             }
         } catch (IOException e) {
-            // Wrapping the checked exception in a RuntimeException as IQuiz interface doesn't declare throws
             throw new RuntimeException(new ContentLoadException("Cannot load questions", e));
         }
         return questions;
@@ -101,6 +101,47 @@ public class QuizModule extends JPanel implements IQuiz {
         else if (percent >= 40) return "Good try!";
         else if (percent >= 20) return "You can do better!";
         else return "Don't give up!";
+    }
+
+    // Landing Page ===
+    private void showStartScreen() {
+        questionContainer.removeAll();
+        progressLabel.setText(""); 
+        btnNext.setVisible(false); 
+
+        JPanel startPanel = new JPanel();
+        startPanel.setLayout(new BoxLayout(startPanel, BoxLayout.Y_AXIS));
+        startPanel.setOpaque(false);
+
+        JLabel titleLabel = new JLabel("SDG 4: Quality Education Quiz");
+        titleLabel.setFont(new Font("SansSerif", Font.BOLD, 22));
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JButton btnStart = new JButton("Start Quiz");
+        btnStart.setFont(new Font("SansSerif", Font.BOLD, 14));
+        btnStart.setBackground(new Color(26, 122, 74));
+        btnStart.setForeground(Color.WHITE);
+        btnStart.setFocusPainted(false);
+        btnStart.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnStart.addActionListener(e -> startQuiz());
+
+        startPanel.add(Box.createVerticalStrut(80));
+        startPanel.add(titleLabel);
+        startPanel.add(Box.createVerticalStrut(40));
+        startPanel.add(btnStart);
+
+        questionContainer.add(startPanel, BorderLayout.CENTER);
+        questionContainer.revalidate();
+        questionContainer.repaint();
+    }
+
+    // method shuffles qustion===
+    private void startQuiz() {
+        Collections.shuffle(questions); // handles the randomization
+        correctCount = 0;
+        currentQuestionIndex = 0;
+        btnNext.setVisible(true); // Bring back the bottom navigation button
+        showQuestion(currentQuestionIndex);
     }
 
     private void showQuestion(int index) {
@@ -124,14 +165,12 @@ public class QuizModule extends JPanel implements IQuiz {
             Question q = questions.get(currentQuestionIndex);
             String answer = "";
             
-            // Extract the user's answer dynamically
             if (q instanceof MCQQuestion) {
                 answer = ((MCQQuestion) q).getSelectedAnswer();
             } else if (q instanceof TrueFalseQuestion) {
                 answer = ((TrueFalseQuestion) q).getSelectedAnswer();
             }
 
-            // Grade answer
             if (q.checkAnswer(answer)) {
                 correctCount++;
             }
@@ -150,7 +189,6 @@ public class QuizModule extends JPanel implements IQuiz {
         int percent = scorePercent();
         String feedback = motivationalMessage(percent);
         
-        // Save the score via Member 4's DataManager
         try {
             DataManager dm = new DataManager("data/scores.txt");
             dm.saveScore("Player1", percent);
@@ -158,14 +196,32 @@ public class QuizModule extends JPanel implements IQuiz {
             e.printStackTrace();
         }
 
-        // Output results to user
-        btnNext.setEnabled(false);
+        btnNext.setVisible(false); // Hide next button on the final screen
         questionContainer.removeAll();
+        progressLabel.setText("Results");
+        
+        JPanel resultsPanel = new JPanel();
+        resultsPanel.setLayout(new BoxLayout(resultsPanel, BoxLayout.Y_AXIS));
+        resultsPanel.setOpaque(false);
         
         JLabel resultLabel = new JLabel("<html><center><h2>Quiz Complete!</h2><br>" 
                                         + "Score: " + percent + "%<br><br>" 
                                         + "<i>" + feedback + "</i></center></html>", SwingConstants.CENTER);
-        questionContainer.add(resultLabel, BorderLayout.CENTER);
+        resultLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        JButton btnRestart = new JButton("Play Again");
+        btnRestart.setBackground(new Color(26, 122, 74));
+        btnRestart.setForeground(Color.WHITE);
+        btnRestart.setFocusPainted(false);
+        btnRestart.setAlignmentX(Component.CENTER_ALIGNMENT);
+        btnRestart.addActionListener(e -> showStartScreen());
+
+        resultsPanel.add(Box.createVerticalStrut(50));
+        resultsPanel.add(resultLabel);
+        resultsPanel.add(Box.createVerticalStrut(30));
+        resultsPanel.add(btnRestart);
+
+        questionContainer.add(resultsPanel, BorderLayout.CENTER);
         questionContainer.revalidate();
         questionContainer.repaint();
     }
@@ -174,11 +230,8 @@ public class QuizModule extends JPanel implements IQuiz {
         return this;
     }
 
+    // clicking the Quiz tab always resets to the Start Screen
     public void onShow() {
-        correctCount = 0;
-        currentQuestionIndex = 0;
-        btnNext.setEnabled(true);
-        loadQuestions();
-        showQuestion(currentQuestionIndex);
+        showStartScreen(); 
     }
 }
