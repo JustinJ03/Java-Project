@@ -1,12 +1,12 @@
 package main;
 
 import gamification.GamificationModule;
-import learning.LearningModule;
-import learning.LearningModulePanel;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
-import quiz.quizModule;
+import learning.LearningModule;
+import learning.LearningModulePanel;
+import quiz.QuizModule;
 
 /**
  * Main.java
