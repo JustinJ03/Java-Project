@@ -231,12 +231,24 @@ public class GamificationModule extends JPanel implements IGamification {
             awardBadge(new Badge("Good Learner", "Scored between 60% and 79%!", "📖"));
 
         // ── Speed badges — tiered: only the best tier is awarded ───────────
-        if (timeLeft >= 60)
-            awardBadge(new Badge("Lightning Fast", "Finished in under 60 seconds!", "⚡"));
-        else if (timeLeft >= 30)
-            awardBadge(new Badge("Quick Thinker",  "Finished in under 90 seconds!", "🧠"));
-        else if (timeLeft > 0)
-            awardBadge(new Badge("Speed Runner",   "Finished before time ran out!", "🏃"));
+        // 1. Define your total quiz time here to match your QuizModule
+        int totalTime = 300; 
+        
+        // 2. Calculate how many seconds the player ACTUALLY took
+        int timeUsed = totalTime - timeLeft;
+
+        // 3. Award badges based on the actual time used
+        if (timeLeft > 0) { // Only award speed badges if they didn't run out of time
+            if (timeUsed <= 60) {
+                awardBadge(new Badge("Lightning Fast", "Finished in under 1 minute!", "⚡"));
+            } 
+            else if (timeUsed <= 150) {
+                awardBadge(new Badge("Quick Thinker",  "Finished in under 2.5 minutes!", "🧠"));
+            } 
+            else {
+                awardBadge(new Badge("Speed Runner",   "Finished before time ran out!", "🏃"));
+            }
+        }
 
         // ── Completion badge (first quiz ever) ────────────────────────────
         awardBadge(new Badge("First Step", "Completed your first quiz!", "🌱"));
