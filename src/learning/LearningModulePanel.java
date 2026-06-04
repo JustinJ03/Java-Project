@@ -9,7 +9,7 @@ import javax.swing.border.*;
  * Swing GUI panel for the Learning Module.
  *
  * Creator : Adriana Umang Anak Nawang (103088)
- * Tester  :
+ * Tester  : Dhiaurrahman Bin Muhammad Dino (102521)
  */
 public class LearningModulePanel extends JPanel {
 
