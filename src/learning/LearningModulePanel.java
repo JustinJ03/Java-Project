@@ -394,9 +394,11 @@ public class LearningModulePanel extends JPanel {
         // Image
         lblImage.setIcon(null);  // clear before loading new image
         if (page.getImagePath() != null) {
-            java.net.URL url = getClass().getResource("/" + page.getImagePath());
-            if (url != null) {
-                ImageIcon icon = new ImageIcon(url);
+            // Use File instead of getResource() — images live on the filesystem,
+            // not on the classpath, so getResource() always returns null.
+            java.io.File imgFile = new java.io.File(page.getImagePath());
+            if (imgFile.exists()) {
+                ImageIcon icon = new ImageIcon(imgFile.getAbsolutePath());
                 int imgW = Math.max(1, textWrapWidth());
                 Image scaled = icon.getImage()
                         .getScaledInstance(imgW, IMAGE_HEIGHT, Image.SCALE_SMOOTH);
