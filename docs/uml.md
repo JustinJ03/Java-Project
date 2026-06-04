@@ -1,31 +1,8 @@
-# EduSDG Class Diagram (Mermaid)
+# EduSDG UML Class Diagram
 
-SUGGESTION (AI-generated). Renders on GitHub and in many Markdown viewers.
+> **This file is outdated** — it was based on the original design template which references
+> `AppModule`, `AppContext`, `Navigator`, `HomeScreen`, and `Screen`, none of which were implemented.
+>
+> Use `docs/uml-diagram-prompt.md` to regenerate an accurate diagram using Claude Chat.
 
-```mermaid
-classDiagram
-    class IModule { <<interface>> +getName() +getView() +onShow() }
-    class IQuiz { <<interface>> +loadQuestions() +scorePercent() +motivationalMessage(int) }
-    class IGamification { <<interface>> +addPoints(int) +totalPoints() +awardedBadges() +leaderboard() }
-    class IDataStorage { <<interface>> +saveScore(String,int) +readScores() }
-    class AppModule { <<abstract>> #ctx +getName() #placeholder(String) }
-    class Question { <<abstract>> #prompt +checkAnswer(String)* +render()* }
-    class Screen { <<abstract>> }
-
-    IModule <|.. AppModule
-    AppModule <|-- LearningModule
-    AppModule <|-- QuizModule
-    AppModule <|-- GamificationModule
-    IQuiz <|.. QuizModule
-    IGamification <|.. GamificationModule
-    IDataStorage <|.. DataManager
-    Question <|-- MCQQuestion
-    Question <|-- TrueFalseQuestion
-    Screen <|-- HomeScreen
-    QuizModule o-- Question
-    LearningModule o-- ContentPage
-    GamificationModule o-- Badge
-    AppContext --> Navigator
-    AppContext --> IDataStorage
-    Main --> AppContext
-```
+See: [`docs/uml-diagram-prompt.md`](uml-diagram-prompt.md)
