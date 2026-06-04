@@ -9,7 +9,7 @@ package data;
  *   - Abstraction: clients call recordScore() without knowing internal logic
  *
  * Creator : Member 4
- * Tester  : Member 4
+ * Tester  : Adriana Umang Anak Nawang (103088)
  */
 public class UserProfile {
 
