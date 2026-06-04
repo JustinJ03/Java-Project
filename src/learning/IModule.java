@@ -4,7 +4,7 @@ package learning;
  * Interface for the Learning Module component.
  *
  * Creator  : Adriana Umang Anak Nawang (103088)
- * Tester   :
+ * Tester   : Dhiaurrahman Bin Muhammad Dino (102521)
  *
  * This interface defines the contract for any module in the SDG4 Quality Education app.
  * It enforces that all modules can load content, navigate pages, and report progress.
