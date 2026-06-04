@@ -148,6 +148,7 @@ public class Main extends JFrame {
         String[] cards = { "LEARN", "QUIZ", "BADGES", "PROFILE" };
         cardLayout.show(cardPanel, cards[idx]);
         // Notify active modules so they can refresh their display
+        if (idx == 1 && quizModule    != null) quizModule.onShow();
         if (idx == 2 && gamifModule   != null) gamifModule.onShow();
         if (idx == 3 && profilePanel  != null) profilePanel.onShow();
         for (int i = 0; i < tabBtns.length; i++) {

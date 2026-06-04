@@ -3,9 +3,7 @@ setlocal enabledelayedexpansion
 if not exist out  mkdir out
 if not exist data mkdir data
 
-REM Compile all .java files under src\ that do NOT have "(suggestion)" in the name.
-REM The wildcard *.java would also match the reference (suggestion) files, causing
-REM duplicate-class errors, so we filter them out with the loop below.
+REM Collect all .java files under src\ for compilation.
 set FILES=
 for /r src %%f in (*.java) do (
     set FNAME=%%f

@@ -22,17 +22,15 @@ public class Badge {
 
     // === CONSTRUCTOR OVERLOADING ===
 
-    /** One-arg: name only — no description, default icon. */
-    public Badge(String name) {
-        this(name, "", "🏅");
-    }
-
-    /** Two-arg: name + description — default icon. */
+    /**
+     * Two-arg: name + description — uses the default medal icon.
+     * Useful when an emoji icon is not needed.
+     */
     public Badge(String name, String description) {
         this(name, description, "🏅");
     }
 
-    /** Three-arg: full constructor — all fields set here. */
+    /** Three-arg: full constructor — name, description, and custom emoji icon. */
     public Badge(String name, String description, String icon) {
         this.name        = name;
         this.description = description;

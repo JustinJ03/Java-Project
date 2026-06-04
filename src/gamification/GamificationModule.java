@@ -27,7 +27,6 @@ public class GamificationModule extends JPanel implements IGamification {
     private static final Color COLOR_BG      = new Color(245, 248, 255);
     private static final Color COLOR_PRIMARY = new Color(63, 81, 181);
     private static final Color COLOR_ACCENT  = new Color(255, 193, 7);
-    private static final Color COLOR_SUCCESS = new Color(76, 175, 80);
     private static final Font  FONT_TITLE    = new Font("SansSerif", Font.BOLD, 18);
     private static final Font  FONT_BODY     = new Font("SansSerif", Font.PLAIN, 13);
     private static final Font  FONT_SMALL    = new Font("SansSerif", Font.PLAIN, 11);

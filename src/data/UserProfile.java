@@ -68,12 +68,6 @@ public class UserProfile {
     /** @return total number of quizzes completed in this session */
     public int    getQuizzesTaken()  { return quizzesTaken; }
 
-    /**
-     * Manually overrides lastScore (used by DataManager overload).
-     * Prefer {@link #recordScore(int)} for normal in-session score recording.
-     */
-    public void   setLastScore(int lastScore) { this.lastScore = lastScore; }
-
     // ── toString ──────────────────────────────────────────────────────────────
     @Override
     public String toString() {

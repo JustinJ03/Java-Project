@@ -4,50 +4,44 @@ import java.util.List;
 
 /**
  * LearningModule.java
- * Core class for the educational content module in the SDG4 Quality Education app.
+ * Core data-and-logic class for the Learning tab.
+ *
+ * Implements IModule to manage an ordered list of ContentPage objects.
+ * Pre-loads 10 pages of SDG 4 content at construction time.
+ * Tracks the current page and the user's overall progress percentage.
  *
  * Creator  : Adriana Umang Anak Nawang (103088)
- * Tester   :
- *
- * Implements IModule to manage a list of ContentPage objects.
- * Pre-loads 10 pages of educational content about SDG 4 (Quality Education).
- * Tracks the user's current page and overall progress.
- *
- * This module interacts with:
- *   - QuizModule  : quiz is unlocked when this module is completed
- *   - GamificationModule : awards a badge when progress hits 100%
- *   - DataManager : progress is persisted via IDataStorage
  */
 public class LearningModule implements IModule {
 
-    // ── Attributes ──────────────────────────────────────────────────────────
-    private String           moduleTitle;    // Display name of this module
-    private List<ContentPage> pages;         // Ordered list of content pages
-    private int              currentPage;    // 1-based index of the current page
-    private String           moduleTopic;    // SDG topic (e.g. "Quality Education")
-    private boolean          finishedByUser; // true after the user taps Finish on the last page
+    // ── Fields ───────────────────────────────────────────────────────────────
+    private String           moduleTitle;    // Display name shown in the header
+    private List<ContentPage> pages;         // Ordered list of all content pages
+    private int              currentPage;    // 1-based index of the active page
+    private String           moduleTopic;    // SDG topic label (e.g. "SDG 4")
+    private boolean          finishedByUser; // true after the user taps Finish
 
     // ── Constructor ──────────────────────────────────────────────────────────
 
     /**
-     * Creates a LearningModule and immediately loads all 10 content pages.
+     * Creates the module and immediately loads all 10 content pages.
      *
-     * @param moduleTitle  the display title shown in the GUI header
-     * @param moduleTopic  the SDG topic name
+     * @param moduleTitle display title shown in the GUI header
+     * @param moduleTopic SDG topic label
      */
     public LearningModule(String moduleTitle, String moduleTopic) {
-        this.moduleTitle  = moduleTitle;        // <-- must be set by caller, not auto-generated
-        this.moduleTopic  = moduleTopic;        // <-- must be set by caller, not auto-generated
-        this.pages        = new ArrayList<>();      // <-- initialized as empty list, will be populated by loadContent()
-        this.currentPage  = 1;      // <-- starts at page 1
-        loadContent();      // <-- loadContent() is called from the constructor to pre-populate the pages list with 10 ContentPage objects about SDG 4 Quality Education
+        this.moduleTitle  = moduleTitle;
+        this.moduleTopic  = moduleTopic;
+        this.pages        = new ArrayList<>();
+        this.currentPage  = 1;
+        loadContent();
     }
 
-    // ── IModule Implementation ────────────────────────────────────────────────
+    // ── IModule implementation ────────────────────────────────────────────────
 
     /**
      * Pre-loads 10 educational content pages about SDG 4 Quality Education.
-     * Called automatically from the constructor.
+     * Called automatically from the constructor and again on reset().
      */
     @Override
     public void loadContent() {
@@ -58,7 +52,7 @@ public class LearningModule implements IModule {
             "SDG 4 is about ensuring inclusive and equitable quality education and promoting lifelong " +
             "learning opportunities for all. Education is more than attending school; it means effective " +
             "teaching, safe environments, and opportunities that nurture creativity and critical thinking.",
-            "resources/learning/images/sdg4_intro.png",
+            "resources/learning/Images/sdg4_intro.png",
             "Key Fact: Education is a fundamental human right recognized by the United Nations."
         ));
 
@@ -68,7 +62,7 @@ public class LearningModule implements IModule {
             "positively to their communities. It builds knowledge, confidence, and skills needed for " +
             "employment and innovation. When education is inclusive, societies become more stable and " +
             "prosperous.",
-            "resources/learning/images/literacy_map.png",
+            "resources/learning/Images/literacy_map.png",
             "Key Fact: Each additional year of schooling can increase a person's income by up to 10 percent."
         ));
 
@@ -78,7 +72,7 @@ public class LearningModule implements IModule {
             "poverty, child labour, gender inequality, conflict and displacement, disability without adequate " +
             "support, and schools that are too far away or unsafe. Removing these barriers is essential to " +
             "achieving SDG 4.",
-            "resources/learning/images/barriers.png",
+            "resources/learning/Images/barriers.png",
             "Key Fact: UNICEF estimates that 244 million children and youth are out of school worldwide."
         ));
 
@@ -87,7 +81,7 @@ public class LearningModule implements IModule {
             "Teachers are the heart of education. Skilled and motivated educators create inclusive " +
             "classrooms and inspire students to learn. Investing in teacher training, fair pay, and " +
             "professional development ensures that every learner receives quality instruction.",
-            "resources/learning/images/inclusive.png",
+            "resources/learning/Images/inclusive.png",
             "Key Fact: SDG 4 aims to substantially increase the supply of qualified teachers, especially in developing countries."
         ));
 
@@ -96,7 +90,7 @@ public class LearningModule implements IModule {
             "Digital tools make education more accessible and interactive. Online platforms, educational " +
             "apps, and virtual classrooms allow students to learn anytime and anywhere. Technology also " +
             "helps bridge gaps for learners in remote areas and those with disabilities.",
-            "resources/learning/images/ece.png",
+            "resources/learning/Images/ece.png",
             "Key Fact: During the COVID-19 pandemic, e-learning platforms reached over one billion users globally."
         ));
 
@@ -105,7 +99,7 @@ public class LearningModule implements IModule {
             "Gender inequality remains a major barrier to education. In some regions, girls face cultural " +
             "restrictions, early marriage, or unsafe school environments. Promoting gender equality ensures " +
             "that both girls and boys have equal opportunities to learn and succeed.",
-            "resources/learning/images/teachers.png",
+            "resources/learning/Images/teachers.png",
             "Key Fact: Educated women are more likely to participate in decision-making and improve community well-being."
         ));
 
@@ -114,7 +108,7 @@ public class LearningModule implements IModule {
             "Inclusive education means adapting teaching methods, materials, and environments so that all " +
             "learners, including those with disabilities, can participate fully. Accessibility features such as " +
             "ramps, assistive technology, and supportive teachers make learning possible for everyone.",
-            "resources/learning/images/digital.png",
+            "resources/learning/Images/digital.png",
             "Key Fact: SDG 4 emphasizes equal access to education for persons with disabilities and those in vulnerable situations."
         ));
 
@@ -123,7 +117,7 @@ public class LearningModule implements IModule {
             "Learning does not end after school. Lifelong learning helps people adapt to changes in " +
             "technology, work, and society. It includes vocational training, adult education, and community " +
             "workshops that keep skills relevant throughout life.",
-            "resources/learning/images/financing.png",
+            "resources/learning/Images/financing.png",
             "Key Fact: Continuous learning supports innovation and sustainable development."
         ));
 
@@ -132,7 +126,7 @@ public class LearningModule implements IModule {
             "Achieving SDG 4 requires collaboration among governments, NGOs, educators, and " +
             "communities. Partnerships help fund schools, train teachers, and share best practices across " +
             "countries. Working together ensures that no learner is left behind.",
-            "resources/learning/images/malaysia.png",
+            "resources/learning/Images/malaysia.png",
             "Key Fact: The Global Partnership for Education supports more than 80 countries in improving access and quality of education."
         ));
 
@@ -141,145 +135,135 @@ public class LearningModule implements IModule {
             "The future of education focuses on creativity, critical thinking, and sustainability. Schools must " +
             "prepare students to solve global challenges such as climate change and inequality. Innovative " +
             "teaching methods and technology will make learning more personalized and inclusive.",
-            "resources/learning/images/action.png",
+            "resources/learning/Images/action.png",
             "Key Fact: By 2030, SDG 4 aims for universal access to free, equitable, and quality primary and secondary education for all children."
         ));
     }
 
     /**
-     * Display the content of a given page to the console.
-     * In the full GUI, the LearningModulePanel calls getPage() instead.
+     * Marks the page as viewed, updates currentPage, and prints a summary to
+     * the console. The GUI uses getPage() directly — this satisfies the IModule
+     * contract and supports console testing.
      *
      * @param pageNumber 1-based page index
      */
     @Override
     public void displayPage(int pageNumber) {
         if (pageNumber < 1 || pageNumber > pages.size()) {
-            System.out.println("Invalid page number: " + pageNumber);       // <-- added error handling for invalid page numbers
-            return;     // <-- early return if page number is out of range
+            System.out.println("Invalid page number: " + pageNumber);
+            return;
         }
-        ContentPage page = pages.get(pageNumber - 1);       // <-- retrieve the ContentPage object for the requested page number (adjusting for 0-based index)
-        page.markViewed();      // <-- mark the page as viewed when displayed
-        currentPage = pageNumber;       // <-- update the currentPage attribute to reflect the newly displayed page
-        System.out.println(page.getFormattedContent());     // <-- print the formatted content of the page to the console (in the GUI, this would be rendered in the panel instead)
-        System.out.println("Page " + currentPage + " of " + getTotalPages());       // <-- print the page number and total pages to the console
+        ContentPage page = pages.get(pageNumber - 1);
+        page.markViewed();
+        currentPage = pageNumber;
+        System.out.println(page.getFormattedContent());
+        System.out.println("Page " + currentPage + " of " + getTotalPages());
     }
 
-    /** Move to the next page if not already at the last page. */
+    /** Advances to the next page; prints a message if already on the last page. */
     @Override
     public void nextPage() {
         if (currentPage < pages.size()) {
-            displayPage(currentPage + 1);       // <-- simply call displayPage() with the next page number, which will handle marking it as viewed and updating currentPage
+            displayPage(currentPage + 1);
         } else {
             System.out.println("You have reached the last page of this module.");
         }
     }
 
-    /** Move to the previous page if not already at the first page. */
+    /** Goes back to the previous page; prints a message if already on the first page. */
     @Override
     public void prevPage() {
         if (currentPage > 1) {
-            displayPage(currentPage - 1);       // <-- simply call displayPage() with the previous page number, which will handle marking it as viewed and updating currentPage
+            displayPage(currentPage - 1);
         } else {
             System.out.println("You are already on the first page.");
         }
     }
 
     @Override
-    public int getTotalPages() {
-        return pages.size();        //<-- return the total number of pages in this module by returning the size of the pages list
-    }
+    public int getTotalPages() { return pages.size(); }
 
     @Override
-    public int getCurrentPage() {
-        return currentPage;     //<-- return the current page number
-    }
+    public int getCurrentPage() { return currentPage; }
 
     /**
-     * Calculate progress as a percentage of pages viewed.
-     * @return value from 0.0 to 100.0
+     * Returns the percentage of pages the user has viewed (0.0 – 100.0).
+     * A page counts as viewed once the user navigates to it.
      */
     @Override
     public double getProgress() {
-        if (pages.isEmpty()) return 0.0;        //<-- avoid division by zero if there are no pages
-        long viewed = pages.stream().filter(ContentPage::isViewed).count();     //<-- count how many pages have been marked as viewed using a stream and filter
-        return (viewed * 100.0) / pages.size();     //<-- calculate the percentage of pages viewed by dividing the count of viewed pages by the total number of pages and multiplying by 100
+        if (pages.isEmpty()) return 0.0;
+        long viewed = pages.stream().filter(ContentPage::isViewed).count();
+        return (viewed * 100.0) / pages.size();
     }
 
     /**
-     * Module is complete only after the user confirms with Finish on the last page.
-     * @return true if the user has finished the module
+     * Returns true only after the user explicitly taps Finish on the last page.
+     * Viewing all pages does not automatically count as completed.
      */
     @Override
-    public boolean isCompleted() {
-        return finishedByUser;      //<-- return the value of finishedByUser, which is set to true when the user taps Finish on the last page
-    }
+    public boolean isCompleted() { return finishedByUser; }
 
-    /** Called from the GUI when the user taps Finish on the last page. */
+    /**
+     * Called by LearningModulePanel when the user taps Finish on the last page.
+     * Marks the module complete and ensures the last page is recorded as viewed.
+     */
     public void markFinished() {
-        finishedByUser = true;      //<-- set finishedByUser to true to indicate that the user has completed the module
-        ContentPage last = getPage(getTotalPages());        // <-- retrieve the last ContentPage object using getPage() with the total number of pages as the argument
-        if (last != null) {
-            last.markViewed();      // <-- ensure the last page is marked as viewed when the user finishes, in case they tapped Finish without navigating to the last page
-        }
+        finishedByUser = true;
+        ContentPage last = getPage(getTotalPages());
+        if (last != null) last.markViewed();
     }
 
-    public boolean hasFinished() {
-        return finishedByUser;      // <-- return the value of finishedByUser to indicate whether the user has finished the module
-    }
-
-    /** Reset the module — mark all pages as unread and return to page 1. */
+    /**
+     * Resets the module back to page 1, clearing all viewed flags and
+     * the finished state. Reloads content from scratch.
+     */
     @Override
     public void reset() {
-        pages.clear();      //<-- clear the existing pages list to remove all current ContentPage objects
-        currentPage = 1;        //<-- reset currentPage back to 1
-        finishedByUser = false;     // <-- reset finishedByUser back to false
-        loadContent();      //<-- call loadContent() to re-populate the pages list with the original 10 ContentPage objects, effectively resetting the module to its initial state
-        System.out.println("Module reset. Starting from page 1.");      // <-- print a message to the console indicating that the module has been reset and the user is back at page 1
+        pages.clear();
+        currentPage    = 1;
+        finishedByUser = false;
+        loadContent();
+        System.out.println("Module reset. Starting from page 1.");
     }
 
-    // ── Additional Methods ────────────────────────────────────────────────────
+    // ── Additional methods used by the GUI panel ──────────────────────────────
 
     /**
-     * Retrieve a specific ContentPage object by 1-based index.
-     * Used by the GUI panel to build the display.
+     * Returns the ContentPage at the given 1-based index.
+     * Used by LearningModulePanel to build the display for each page.
      *
      * @param pageNumber 1-based index
-     * @return the ContentPage, or null if out of range
+     * @return the ContentPage, or null if the index is out of range
      */
     public ContentPage getPage(int pageNumber) {
-        if (pageNumber < 1 || pageNumber > pages.size()) return null;       // <-- added error handling for invalid page numbers, returning null if the requested page number is out of range
-        return pages.get(pageNumber - 1);       // <-- return the ContentPage object from the pages list, adjusting for 0-based index by subtracting 1 from the pageNumber argument
+        if (pageNumber < 1 || pageNumber > pages.size()) return null;
+        return pages.get(pageNumber - 1);
     }
 
     /**
-     * Returns the current ContentPage object.
-     * Convenience method for GUI navigation.
-     *
-     * @return current ContentPage
+     * Returns the ContentPage that is currently on screen.
+     * Convenience method so the panel does not need to call getPage(getCurrentPage()).
      */
     public ContentPage getCurrentContentPage() {
-        return getPage(currentPage);        // <-- simply call getPage() with the currentPage attribute to retrieve the ContentPage object for the currently displayed page
+        return getPage(currentPage);
     }
 
     /**
-     * Returns the list of all content pages.
+     * Returns an unmodifiable view of all pages.
      * Used by the GUI to populate the module list panel.
-     *
-     * @return unmodifiable view of the pages list
      */
     public List<ContentPage> getAllPages() {
-        return java.util.Collections.unmodifiableList(pages);       // <-- return an unmodifiable view of the pages list to prevent external modification of the internal state of the LearningModule
+        return java.util.Collections.unmodifiableList(pages);
     }
 
     // ── Getters ───────────────────────────────────────────────────────────────
-
-    public String getModuleTitle()  { return moduleTitle; }
-    public String getModuleTopic()  { return moduleTopic; }
+    public String getModuleTitle() { return moduleTitle; }
+    public String getModuleTopic() { return moduleTopic; }
 
     @Override
     public String toString() {
         return String.format("LearningModule{title='%s', pages=%d, progress=%.1f%%}",
-                moduleTitle, pages.size(), getProgress());      // <-- toString() provides a concise summary of the module, including its title, number of pages, and current progress percentage (but not the full content of the pages)
+                moduleTitle, pages.size(), getProgress());
     }
 }

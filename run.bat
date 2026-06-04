@@ -1,3 +1,3 @@
 @echo off
-REM SUGGESTION (AI-generated). Rename to run.bat after merging suggestion files.
+REM Run the EduSDG application from compiled class files.
 java -cp out main.Main

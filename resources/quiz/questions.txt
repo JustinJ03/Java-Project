@@ -1,4 +1,4 @@
-# SUGGESTION (AI-generated content). Rename to questions.txt; edit freely.
+# SDG 4 Quiz Questions
 # Format, one question per line:
 #   MCQ|prompt|option1;option2;option3;option4|correctIndex(0-based)
 #   TF|prompt||true   (or false)   -- options field is empty for True/False

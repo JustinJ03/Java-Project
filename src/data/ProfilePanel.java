@@ -37,7 +37,6 @@ public class ProfilePanel extends JPanel {
     private static final Color COLOR_BG      = new Color(245, 248, 255);
     private static final Color COLOR_PRIMARY = new Color(63, 81, 181);
     private static final Color COLOR_ACCENT  = new Color(255, 193, 7);
-    private static final Color COLOR_SUCCESS = new Color(76, 175, 80);
     private static final Color COLOR_HEADER  = new Color(63, 81, 181);
 
     // ── Fonts ─────────────────────────────────────────────────────────────────
