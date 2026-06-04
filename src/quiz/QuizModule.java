@@ -206,9 +206,9 @@ public class QuizModule extends JPanel implements IQuiz {
         titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JLabel descLabel = new JLabel(
-                "<html><center>Test your knowledge on SDG 4!<br><br>"
+                "<html><div style='text-align: center; width: 100%;'>Test your knowledge on SDG 4!<br><br>"
                 + "Questions are randomized.<br>"
-                + "You have <b>" + QUIZ_SECONDS + " seconds</b> to finish.</center></html>");
+                + "You have <b>" + QUIZ_SECONDS + " seconds</b> to finish.</div></html>", SwingConstants.CENTER);
         descLabel.setFont(new Font("SansSerif", Font.PLAIN, 15));
         descLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
