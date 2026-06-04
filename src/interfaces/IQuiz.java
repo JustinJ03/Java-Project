@@ -7,7 +7,7 @@ import quiz.Question;
 /**
  * Contract for the Quiz module's core logic.
  *
- * Implemented by: QuizModule (Member 2).
+ * Implemented by: QuizModule (Vince Adhar Anak Sekelie (106653)).
  */
 public interface IQuiz {
 
