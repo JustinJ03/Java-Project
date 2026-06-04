@@ -5,7 +5,8 @@
  * Tracks the player's points and badges, displays a leaderboard read from
  * shared storage, and shows an optional countdown timer during a quiz session.
  *
- * Creator  : Member 3
+ * Creator  : Dhiaurrahman Bin Muhammad Dino (102521)
+ * Tester : Vince Adhar Anak Sekelie (106653)
  */
 package gamification;
 
