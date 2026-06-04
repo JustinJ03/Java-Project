@@ -41,7 +41,7 @@ public class TrueFalseQuestion extends Question {
         panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         // The question text, formatted to wrap correctly inside the screen
-        JLabel promptLabel = new JLabel("<html><div style='width:320px; font-size:16px; font-family: sans-serif; font-weight: bold; color: #2C3E50; margin-bottom:15px;'>" 
+        JLabel promptLabel = new JLabel("<html><div style='width:100%; font-size:16px; font-family: sans-serif; font-weight: bold; color: #2C3E50; margin-bottom:15px;'>" 
                                         + prompt + "</div></html>");
         panel.add(promptLabel);
         panel.add(Box.createVerticalStrut(10)); // Add spacing
