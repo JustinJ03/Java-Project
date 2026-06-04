@@ -29,7 +29,7 @@ import java.util.List;
  *   - Exception handling: DataNotFoundException caught and displayed in-panel
  *
  * Creator : Member 4
- * Tester  : Member 4
+ * Tester  : Adriana Umang Anak Nawang (103088)
  */
 public class ProfilePanel extends JPanel {
 
