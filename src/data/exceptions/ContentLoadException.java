@@ -11,7 +11,7 @@ package data.exceptions;
  * OOP: custom checked exception; extends Exception for compile-time enforcement.
  *
  * Creator : Member 4
- * Tester  : Member 4
+ * Tester  : Adriana Umang Anak Nawang (103088)
  */
 public class ContentLoadException extends Exception {
 
