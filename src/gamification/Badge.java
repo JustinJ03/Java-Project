@@ -11,7 +11,7 @@ package gamification;
  *   - Constructor overloading: three constructors, each delegating upward
  *     to the full three-argument constructor.
  *
- * Creator  : Member 3
+ * Creator  : Dhiaurrahman Bin Muhammad Dino (102521)
  */
 public class Badge {
 
