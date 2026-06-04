@@ -24,8 +24,8 @@ import java.util.List;
  * one at a time with a 120-second countdown timer, checks answers, saves the
  * score via DataManager, and notifies GamificationModule when the quiz ends.
  *
- * Creator : Member 2
- * Tester  : Member 2
+ * Creator : Vince Adhar Anak Sekelie (106653)
+ * Tester  : 
  */
 public class QuizModule extends JPanel implements IQuiz {
 
