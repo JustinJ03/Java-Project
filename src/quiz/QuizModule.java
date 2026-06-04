@@ -37,7 +37,7 @@ public class QuizModule extends JPanel implements IQuiz {
     private String playerName               = "Player"; // set at quiz start via dialog
 
     // ── 120-second countdown timer ────────────────────────────────────────────
-    private static final int QUIZ_SECONDS    = 120;
+    private static final int QUIZ_SECONDS    = 300;
     private javax.swing.Timer quizTimer;
     private int    remainingSeconds          = QUIZ_SECONDS;
 
