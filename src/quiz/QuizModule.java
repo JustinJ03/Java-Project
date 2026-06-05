@@ -26,8 +26,6 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 
 /**
- * Creator : Vince Adhar Anak Sekelie (106653)
- * Tester/Reviewer  : Justin Joel anak Juni (104607)
  * 
  * Presents the SDG 4 quiz: loads questions from questions.txt, displays them one at a
  * time with a 300-second countdown timer, checks answers, saves the score to
