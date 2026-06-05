@@ -1,7 +1,5 @@
 /**
  * GamificationModule.java
- * Gamification Module for the EduSDG application (SDG 4 – Quality Education).
- *
  * Tracks the player's points and badges, displays a leaderboard read from
  * shared storage, and shows an optional countdown timer during a quiz session.
  *
