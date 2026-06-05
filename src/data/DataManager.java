@@ -8,7 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 
+ * Creator : Justin Joel anak Juni (104607)
+ * Tester/Reviewer  : Vince Adhar Anak Sekelie (106653)
  * 
  * Text-file implementation of IDataStorage.
  *
@@ -20,7 +21,6 @@ import java.util.List;
  *   - Custom exceptions   : InvalidScoreException, DataNotFoundException
  *   - Interface implementation : implements IDataStorage
  *
- * Member 4 -- this file is complete.
  */
 public class DataManager implements IDataStorage {
 

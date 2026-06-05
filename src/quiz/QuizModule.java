@@ -393,11 +393,6 @@ public class QuizModule extends JPanel implements IQuiz {
             System.err.println("Score save failed: " + e.getMessage());
         }
 
-        // trigger badge/points update immediately — Member 3's GamificationModule
-        if (gamifModule != null) {
-            gamifModule.onQuizComplete(playerName, correctCount, questions.size(), timeLeft);
-        }
-
         // Build results screen
         btnAction.setVisible(false);
         feedbackLabel.setText("");
@@ -473,6 +468,11 @@ public class QuizModule extends JPanel implements IQuiz {
         questionContainer.add(resultsPanel, BorderLayout.CENTER);
         questionContainer.revalidate();
         questionContainer.repaint();
+
+        // trigger badge/points update immediately — Member 3's GamificationModule
+        if (gamifModule != null) {
+            gamifModule.onQuizComplete(playerName, correctCount, questions.size(), timeLeft);
+        }
     }
 
     // ── IQuiz extras ─────────────────────────────────────────────────────────
