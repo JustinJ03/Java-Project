@@ -3,6 +3,9 @@ package quiz;
 import javax.swing.JComponent;
 
 /**
+ * Creator : Vince Adhar Anak Sekelie (106653)
+ * Tester/Reviewer  : Justin Joel anak Juni (104607)
+ * 
  * Abstract base class for all question types (MCQ, True/False). Declares two abstract
  * methods — checkAnswer and render — that each subclass must implement differently;
  * this is the core of the polymorphism pattern used in QuizModule, which iterates over

@@ -1,19 +1,21 @@
 package data;
 
 import data.exceptions.DataNotFoundException;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 /**
+ * Creator  : Justin Joel anak Juni (104607)
+ * Tester/Reviewer  : Adriana Umang Anak Nawang (103088)
+ * 
  * ProfilePanel.java
  * Displays the player score history read from data/scores.txt.
  *
@@ -27,9 +29,8 @@ import java.util.List;
  *   - Uses IDataStorage through DataManager (polymorphism)
  *   - Encapsulation: all UI logic self-contained in this class
  *   - Exception handling: DataNotFoundException caught and displayed in-panel
- *
- * Creator : Member 4
- * Tester  : Adriana Umang Anak Nawang (103088)
+ *   - Abstraction: callers just call onShow() to refresh data without knowing internal logic
+ * 
  */
 public class ProfilePanel extends JPanel {
 

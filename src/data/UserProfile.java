@@ -1,6 +1,9 @@
 package data;
 
 /**
+ * Creator  : Justin Joel anak Juni (104607)
+ * Tester/Reviewer  : Adriana Umang Anak Nawang (103088)
+ * 
  * UserProfile.java
  * Holds per-session player information and statistics.
  *
@@ -8,8 +11,6 @@ package data;
  *   - Encapsulation: all fields private, accessed via getters/setters
  *   - Abstraction: clients call recordScore() without knowing internal logic
  *
- * Creator : Member 4
- * Tester  : Adriana Umang Anak Nawang (103088)
  */
 public class UserProfile {
 

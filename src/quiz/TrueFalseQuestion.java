@@ -1,10 +1,13 @@
 package quiz;
 
+import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import java.awt.*;
 
 /**
+ * Creator : Vince Adhar Anak Sekelie (106653)
+ * Tester/Reviewer  : Justin Joel anak Juni (104607)
+ * 
  * True/False question. Renders two JRadioButtons labelled "True" and "False".
  * selectedAnswer stores "true" or "false" as a string; checkAnswer() parses it back
  * to boolean for comparison with the stored correct answer.

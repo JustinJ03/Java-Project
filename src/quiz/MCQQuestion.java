@@ -1,11 +1,14 @@
 package quiz;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
 
 /**
+ * Creator : Vince Adhar Anak Sekelie (106653)
+ * Tester/Reviewer  : Justin Joel anak Juni (104607)
+ * 
  * Multiple-choice question. Renders as a vertical list of JRadioButtons. selectedAnswer
  * is updated by the ActionListener attached to each radio button; QuizModule reads it
  * via getSelectedAnswer() before calling checkAnswer().

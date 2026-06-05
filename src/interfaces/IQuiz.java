@@ -5,10 +5,12 @@ import java.util.List;
 import quiz.Question;
 
 /**
+ * Creator : Vince Adhar Anak Sekelie (106653)
+ * Tester/Reviewer  : Justin Joel anak Juni (104607)
+ * 
  * Contract for any quiz module. Defines how questions are loaded, how the score is
  * calculated, and how motivational feedback is produced. Implemented by QuizModule.
  *
- * Implemented by: QuizModule (Vince Adhar Anak Sekelie (106653)).
  */
 public interface IQuiz {
 

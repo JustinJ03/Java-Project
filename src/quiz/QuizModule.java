@@ -5,10 +5,6 @@ import data.exceptions.ContentLoadException;
 import data.exceptions.InvalidScoreException;
 import gamification.GamificationModule;
 import interfaces.IQuiz;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -17,15 +13,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 /**
+ * Creator : Vince Adhar Anak Sekelie (106653)
+ * Tester/Reviewer  : Justin Joel anak Juni (104607)
+ * 
  * Presents the SDG 4 quiz: loads questions from questions.txt, displays them one at a
  * time with a 300-second countdown timer, checks answers, saves the score to
  * data/scores.txt via DataManager (Member 4), and notifies GamificationModule to award
  * points and badges the moment the quiz ends (Member 3).
  *
- * Creator : Vince Adhar Anak Sekelie (106653)
- * Tester  :
  */
 public class QuizModule extends JPanel implements IQuiz {
 
