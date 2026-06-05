@@ -57,7 +57,7 @@ public class MCQQuestion extends Question {
         panel.setOpaque(false);
         panel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
-        // Create the question text (wrapped in HTML so long questions don't get cut off)
+        // Create the question text
         JLabel promptLabel = new JLabel("<html><div style='width:100%; font-size:16px; font-family: sans-serif; font-weight: bold; color: #2C3E50; margin-bottom:15px;'>" 
                                         + prompt + "</div></html>");
         panel.add(promptLabel);
