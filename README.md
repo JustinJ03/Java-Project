@@ -1,74 +1,95 @@
-# EduSDG – SDG 4 Quality Education Java Application
+# EduSDG – SDG 4 Quality Education
 
-## Overview
-EduSDG is a Java Swing desktop application centred on **SDG 4 – Quality Education**.
-It provides three integrated modules: a Learning Module with 10+ educational screens,
-a Quiz Module with 20+ questions and motivational scoring, and a Gamification Module
-with badges, points, and a leaderboard. Scores are stored in a text file with no hardcoding.
+A Java Swing desktop application for **SDG 4 – Quality Education**, built for TMF2954 Java Programming.
 
-## How to Build and Run
+The app has four tabs:
+- **Learn** – 10 educational pages about SDG 4 with images and Prev/Next navigation
+- **Quiz** – 30 questions (multiple-choice + true/false) with a 300-second countdown timer
+- **Leaderboard** – points and badges earned from quizzes
+- **Profile** – score history read from a text file
 
-Always run from the project root directory (the folder containing `src/` and `resources/`). The app reads `resources/` and writes `data/` using relative paths.
+---
 
-### Step 1 — Compile (one time, or after any code change)
+## Requirements
 
-**Option A — Using the provided script (Windows):**
+- **Java 11 or higher** (JDK, not just JRE). Check with:
+  ```
+  java -version
+  ```
+- No external libraries needed.
+
+---
+
+## How to Download
+
+1. On the GitHub page, click the green **`Code`** button → **Download ZIP**.
+2. Extract the ZIP to any folder.
+3. Open a terminal **inside the extracted folder** (the folder that contains `EduSDG.jar`, `src/`, and `resources/`).
+
+> Or clone it: `git clone https://github.com/JustinJ03/Java-Project.git`
+
+---
+
+## How to Run
+
+> ⚠️ **Important:** Always run from the project root folder (the one containing `EduSDG.jar` and the `resources/` folder). The program loads images and saves scores using paths relative to this folder.
+
+### Option A — Run the ready-made JAR (easiest, no compiling)
+
+```
+java -jar EduSDG.jar
+```
+
+### Option B — Compile from source, then run
+
+**Windows (using the provided script):**
 ```
 build.bat
+java -jar EduSDG.jar
 ```
 
-**Option B — Direct command line (Windows CMD):**
+**Any OS (manual compile):**
 ```
-for /r src %f in (*.java) do @set FILES=%FILES% "%f"
-javac -d out %FILES%
-```
-
-**Option C — PowerShell:**
-```powershell
-$files = Get-ChildItem -Recurse src -Filter *.java | ForEach-Object { $_.FullName }
-javac -d out $files
-```
-
-### Step 2 — Run
-
-```
+javac -d out src/main/*.java src/interfaces/*.java src/learning/*.java src/quiz/*.java src/gamification/*.java src/data/*.java src/data/exceptions/*.java
 java -cp out main.Main
 ```
 
-> ⚠️ Always run from the project root directory.
+---
 
 ## Project Structure
+
 ```
+EduSDG.jar              Pre-built executable (run with: java -jar EduSDG.jar)
+build.bat               Compiles src/ and rebuilds EduSDG.jar (Windows)
 src/
-  main/         Main.java (entry point — JFrame shell with bottom tab bar)
-  interfaces/   IQuiz, IGamification, IDataStorage
-  learning/     IModule, LearningModule, ContentPage,
-                LearningModulePanel                      (Member 1 — COMPLETE)
-  quiz/         QuizModule, Question, MCQQuestion,
-                TrueFalseQuestion                        (Member 2 — TODO)
-  gamification/ GamificationModule, Badge                (Member 3 — COMPLETE)
-  data/         DataManager, UserProfile, exceptions/    (Member 4 — COMPLETE)
+  main/                 Main.java — entry point, JFrame with 4-tab bar
+  interfaces/           IQuiz, IGamification, IDataStorage
+  learning/             IModule, LearningModule, ContentPage, LearningModulePanel
+  quiz/                 QuizModule, Question, MCQQuestion, TrueFalseQuestion
+  gamification/         GamificationModule, Badge
+  data/                 DataManager, UserProfile, ProfilePanel, exceptions/
 resources/
-  learning/     Images/ (placeholder images)
-  quiz/questions.txt   Quiz question bank (MCQ + True/False)
-tests/
-  TestSuite.java        Automated structural and logic tests
-  DebugHelper.java      Environment diagnostics tool
-  ManualTests.java      Basic logic checks
+  learning/Images/      Lesson images (10 PNG files)
+  quiz/questions.txt    Quiz question bank
 data/
-  scores.txt            Created at runtime when a quiz is completed
+  scores.txt            Score history (CSV: name,score,timestamp) — written at runtime
 ```
+
+---
 
 ## Team
 
-| Member   | Role                         | Classes                                               | Interface       |
-|----------|------------------------------|-------------------------------------------------------|-----------------|
-| Member 1 | Learning Module              | LearningModule, ContentPage, LearningModulePanel       | IModule         |
-| Member 2 | Quiz Module                  | QuizModule, Question, MCQQuestion, TrueFalseQuestion  | IQuiz           |
-| Member 3 | Gamification Module          | GamificationModule, Badge                             | IGamification   |
-| Member 4 | Data & Exception Handling    | DataManager, UserProfile                              | IDataStorage    |
+| Member   | Role                       | Interface       | Main Classes                                          |
+|----------|----------------------------|-----------------|-------------------------------------------------------|
+| Member 1 | Core & Learning Module     | IModule         | LearningModule, ContentPage, LearningModulePanel       |
+| Member 2 | Quiz Module                | IQuiz           | QuizModule, Question, MCQQuestion, TrueFalseQuestion  |
+| Member 3 | Gamification Module        | IGamification   | GamificationModule, Badge                             |
+| Member 4 | Data & Exception Handling  | IDataStorage    | DataManager, UserProfile, ProfilePanel, 3 exceptions  |
 
-## Score Scale
+---
+
+## Score Feedback Scale
+
 ```
 80 – 100% : Outstanding!
 60 –  79% : That's good!
@@ -77,15 +98,13 @@ data/
  0 –  19% : Don't give up!
 ```
 
-## Running the Tests
-After compiling, run the test suite to check your implementation:
-```
-javac -cp out -d out tests\TestSuite.java tests\DebugHelper.java tests\ManualTests.java
-java -cp out tests.TestSuite
-java -cp out tests.DebugHelper
-```
-`[STRUCTURAL]` tests pass immediately. `[LOGIC]` tests turn green as each member implements their TODOs.
+---
 
-## Requirements
-- Java 11 or higher (tested on JDK 25)
-- No external libraries required
+## OOP Concepts Demonstrated
+
+- **Abstraction** – 4 interfaces + abstract `Question` class
+- **Inheritance** – `MCQQuestion`/`TrueFalseQuestion` extend `Question`; custom exceptions extend `Exception`
+- **Polymorphism** – `QuizModule` treats every question as a `Question`; modules use `IDataStorage`
+- **Method overloading** – `DataManager.saveScore(...)`, `GamificationModule.addPoints(...)`
+- **Constructor overloading** – `ContentPage` (3), `Badge` (2)
+- **Custom exceptions** – `ContentLoadException`, `InvalidScoreException`, `DataNotFoundException`
