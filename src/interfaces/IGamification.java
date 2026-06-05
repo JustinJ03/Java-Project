@@ -4,7 +4,7 @@ import java.util.List;
 import gamification.Badge;
 
 /**
- * Contract for the gamification system. Defines point tracking, badge management,
+ * Implement for the gamification system. Defines point tracking, badge management,
  * and leaderboard retrieval. Implemented by GamificationModule.
  * The two addPoints signatures demonstrate method overloading.
  */
