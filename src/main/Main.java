@@ -43,6 +43,8 @@ public class Main extends JFrame {
     GamificationModule gamifModule;         // Member 3
     ProfilePanel       profilePanel;        // Member 4
 
+    private int currentTabIdx = 0; // tracks which tab is currently visible
+
     public Main() {
         super("SDG 4 - Quality Education");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -156,6 +158,20 @@ public class Main extends JFrame {
      * Modules use onShow() to refresh data (e.g. leaderboard re-reads scores.txt).
      */
     void showTab(int idx) {
+        // Warn before resetting an active quiz (switching away OR re-clicking the quiz tab)
+        if (quizModule != null && quizModule.isQuizInProgress()) {
+            boolean leavingQuizTab    = (idx != 1);
+            boolean reClickingQuizTab = (idx == 1 && currentTabIdx == 1);
+            if (leavingQuizTab || reClickingQuizTab) {
+                int choice = JOptionPane.showConfirmDialog(
+                    this,
+                    "Switching tabs will reset your current quiz. Continue?",
+                    "Quiz In Progress",
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
+                if (choice != JOptionPane.YES_OPTION) return; // user cancelled — stay on quiz tab
+            }
+        }
         String[] cards = { "LEARN", "QUIZ", "BADGES", "PROFILE" };
         cardLayout.show(cardPanel, cards[idx]);
         // Notify active modules so they can refresh their display
@@ -176,6 +192,7 @@ public class Main extends JFrame {
                 label.setFont(new Font("SansSerif", active ? Font.BOLD : Font.PLAIN, 10));
             }
         }
+        currentTabIdx = idx;
     }
 
     // Custom Icon implementation that paints a rounded gradient circle with a glyph for each tab.

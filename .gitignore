@@ -18,6 +18,7 @@ credentials*
 out/
 *.class
 /data/
+sources.txt
 derby.log
 *.log
 

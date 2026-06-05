@@ -179,7 +179,7 @@ public class QuizModule extends JPanel implements IQuiz {
     /** Returns the score as a percentage (0-100). */
     @Override
     public int scorePercent() {
-        return questions.isEmpty() ? 0 : (correctCount * 100) / questions.size();
+        return questions.isEmpty() ? 0 : (int) Math.round((correctCount * 100.0) / questions.size());
     }
 
     /** Maps a percentage to the five-band motivational message required by the rubric. */
@@ -486,6 +486,11 @@ public class QuizModule extends JPanel implements IQuiz {
     // ── IQuiz extras ─────────────────────────────────────────────────────────
 
     public JComponent getView() { return this; }
+
+    /** Returns true if a quiz is currently active (timer is running). */
+    public boolean isQuizInProgress() {
+        return quizTimer != null && quizTimer.isRunning();
+    }
 
     /** Resets to start screen whenever the Quiz tab is tapped. */
     public void onShow() { showStartScreen(); }

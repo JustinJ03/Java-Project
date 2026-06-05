@@ -8,23 +8,34 @@ with badges, points, and a leaderboard. Scores are stored in a text file with no
 
 ## How to Build and Run
 
-**Compile:**
+Always run from the project root directory (the folder containing `src/` and `resources/`). The app reads `resources/` and writes `data/` using relative paths.
+
+### Step 1 — Compile (one time, or after any code change)
+
+**Option A — Using the provided script (Windows):**
 ```
 build.bat
 ```
 
-**Run:**
+**Option B — Direct command line (Windows CMD):**
 ```
-run.bat
+for /r src %f in (*.java) do @set FILES=%FILES% "%f"
+javac -d out %FILES%
 ```
 
-Or manually from the project root:
+**Option C — PowerShell:**
+```powershell
+$files = Get-ChildItem -Recurse src -Filter *.java | ForEach-Object { $_.FullName }
+javac -d out $files
 ```
-javac -d out src\main\Main.java src\interfaces\*.java src\learning\*.java src\quiz\*.java src\gamification\*.java src\data\*.java src\data\exceptions\*.java
+
+### Step 2 — Run
+
+```
 java -cp out main.Main
 ```
 
-> Always run from the project root directory (the folder containing `src/` and `resources/`).
+> ⚠️ Always run from the project root directory.
 
 ## Project Structure
 ```

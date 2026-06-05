@@ -29,6 +29,8 @@ public class GamificationModule extends JPanel implements IGamification {
     private static final Font  FONT_TITLE    = new Font("SansSerif", Font.BOLD, 18);
     private static final Font  FONT_BODY     = new Font("SansSerif", Font.PLAIN, 13);
     private static final Font  FONT_SMALL    = new Font("SansSerif", Font.PLAIN, 11);
+    /** Must match QuizModule.QUIZ_SECONDS — shared quiz duration in seconds. */
+    private static final int QUIZ_TOTAL_SECONDS = 300;
 
     // ── State ─────────────────────────────────────────────────────────────────
     private int              points = 0;
@@ -61,8 +63,8 @@ public class GamificationModule extends JPanel implements IGamification {
         points += p;
 
         // award milestone badges whenever points cross a threshold for the first time.
-        if (points >= 10  && !hasBadge("First Steps"))
-            badges.add(new Badge("First Steps",  "Earned your first 10 points!", "🌱"));
+        if (points >= 10  && !hasBadge("10-Point Club"))
+            badges.add(new Badge("10-Point Club", "Earned your first 10 points!", "🌱"));
 
         if (points >= 50  && !hasBadge("Rising Star"))
             badges.add(new Badge("Rising Star",  "Earned 50 points!", "⭐"));
@@ -117,7 +119,7 @@ public class GamificationModule extends JPanel implements IGamification {
             return new ArrayList<>();
         }
 
-        // sort descending by score (index 1 in the CSV row).
+        // STEP 2: Sort by score (index 1) descending
         rows.sort((a, b) -> {
             try {
                 return Integer.parseInt(b[1]) - Integer.parseInt(a[1]);
@@ -223,7 +225,7 @@ public class GamificationModule extends JPanel implements IGamification {
 
         // tiered speed badges — only the best tier is awarded based on time used.
         // 1. Define your total quiz time here to match your QuizModule
-        int totalTime = 300; 
+        int totalTime = QUIZ_TOTAL_SECONDS; 
         
         // 2. Calculate how many seconds the player ACTUALLY took
         int timeUsed = totalTime - timeLeft;
