@@ -6,7 +6,7 @@ package quiz;
  * points and badges the moment the quiz ends (Member 3).
  *
  * Creator : Vince Adhar Anak Sekelie (106653)
- * Tester  :
+ * Tester/Reviewer  : Justin Joel anak Juni (104607)
  */
 import data.DataManager;
 import data.exceptions.ContentLoadException;
