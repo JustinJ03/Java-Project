@@ -1,7 +1,7 @@
 package gamification;
 
 /**
- * Immutable reward badge awarded to the player. The two-arg constructor delegates
+ * Define reward badge awarded to the player. The two-arg constructor delegates
  * to the three-arg constructor (constructor overloading). equals() and hashCode()
  * compare by name so GamificationModule can detect duplicates.
  *
