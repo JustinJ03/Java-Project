@@ -10,8 +10,9 @@ import learning.LearningModulePanel;
 import quiz.QuizModule;
 
 /**
- * Main.java
- * Entry point for the SDG 4 - Quality Education desktop application.
+ * Entry point and root JFrame.
+ * Owns all four module instances and manages tab navigation via CardLayout.
+ * Wires modules together using setter injection at startup.
  *
  * Creator : All members (shared file)
  * Tester  : All members
@@ -57,6 +58,11 @@ public class Main extends JFrame {
         showTab(0);
     }
 
+    /**
+     * Constructs all four modules and injects dependencies between them.
+     * QuizModule receives a GamificationModule reference (so it can award badges on quiz end)
+     * and a Runnable callback (so 'View Leaderboard' can navigate without knowing about Main).
+     */
     void initModels() {
         learningModule = new LearningModule("Quality Education", "SDG 4");      // Member 1
         quizModule     = new QuizModule();                                        // Member 2
@@ -69,6 +75,7 @@ public class Main extends JFrame {
         quizModule.setGoToLeaderboardCallback(() -> showTab(2));
     }
 
+    /** Adds the four module panels to the CardLayout and attaches the bottom tab bar. */
     void buildUI() {
         cardLayout = new CardLayout();
         cardPanel  = new JPanel(cardLayout);
@@ -144,6 +151,10 @@ public class Main extends JFrame {
         return bar;
     }
 
+    /**
+     * Switches the visible card and notifies the newly active module via onShow().
+     * Modules use onShow() to refresh data (e.g. leaderboard re-reads scores.txt).
+     */
     void showTab(int idx) {
         String[] cards = { "LEARN", "QUIZ", "BADGES", "PROFILE" };
         cardLayout.show(cardPanel, cards[idx]);
@@ -151,6 +162,7 @@ public class Main extends JFrame {
         if (idx == 1 && quizModule    != null) quizModule.onShow();
         if (idx == 2 && gamifModule   != null) gamifModule.onShow();
         if (idx == 3 && profilePanel  != null) profilePanel.onShow();
+        // update the active tab's icon and label to highlight it.
         for (int i = 0; i < tabBtns.length; i++) {
             boolean active = (i == idx);
             Color c = TAB_COLORS[i];
@@ -166,6 +178,7 @@ public class Main extends JFrame {
         }
     }
 
+    // Custom Icon implementation that paints a rounded gradient circle with a glyph for each tab.
     /** Rounded gradient badge icons for the bottom tab bar. */
     static final class TabBarIcon implements Icon {
         static final int SIZE  = 30;
@@ -238,6 +251,10 @@ public class Main extends JFrame {
     }
 
     // ── Placeholder panel for unfinished modules ──────────────────────────────
+    /**
+     * Utility: builds a centred card panel used when a module has not yet been implemented.
+     * Not used in the final build.
+     */
     static JPanel makePlaceholder(String title, String msg, int tabIndex) {
         Color accent = TAB_COLORS[tabIndex];
         JPanel outer = new JPanel(new GridBagLayout());

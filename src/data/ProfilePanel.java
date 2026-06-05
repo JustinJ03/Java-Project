@@ -182,7 +182,10 @@ public class ProfilePanel extends JPanel {
 
     // ── Data loading ──────────────────────────────────────────────────────────
 
-    /** Reads scores.txt and populates the stats labels and table. */
+    /**
+     * Reads all scores from scores.txt, sorts them highest-first, updates the three
+     * summary labels, and populates the table. Clears existing rows before repopulating.
+     */
     private void refreshData() {
         tableModel.setRowCount(0); // clear existing rows
 
@@ -201,11 +204,11 @@ public class ProfilePanel extends JPanel {
             return;
         }
 
-        // Sort by score descending (leaderboard style)
+        // sort descending so the highest score appears at rank 1.
         rows.sort(Comparator.comparingInt(
                 r -> -parseSafe(r.length > 1 ? r[1] : "0")));
 
-        // Calculate stats
+        // derive summary stats from the sorted rows.
         int total = rows.size();
         int best  = rows.stream().mapToInt(r -> parseSafe(r.length > 1 ? r[1] : "0")).max().orElse(0);
         int avg   = (int) rows.stream().mapToInt(r -> parseSafe(r.length > 1 ? r[1] : "0")).average().orElse(0);
@@ -215,6 +218,7 @@ public class ProfilePanel extends JPanel {
         lblAvg.setText(avg + "%");
 
         // Populate table
+        // convert epoch milliseconds (CSV column 3) to a readable date string.
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yy HH:mm");
         int rank = 1;
         for (String[] row : rows) {
@@ -234,6 +238,7 @@ public class ProfilePanel extends JPanel {
 
     // ── Helpers ───────────────────────────────────────────────────────────────
 
+    // reused here to safely parse score strings that may be malformed in the file.
     private int parseSafe(String s) {
         try { return Integer.parseInt(s.trim()); }
         catch (NumberFormatException e) { return 0; }

@@ -4,6 +4,11 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
+/**
+ * True/False question. Renders two JRadioButtons labelled "True" and "False".
+ * selectedAnswer stores "true" or "false" as a string; checkAnswer() parses it back
+ * to boolean for comparison with the stored correct answer.
+ */
 public class TrueFalseQuestion extends Question {
 
     // Stores if the correct answer is 'true' or 'false'
@@ -25,7 +30,7 @@ public class TrueFalseQuestion extends Question {
             return false;
         }
         
-        // Converts the word "true" or "false" into a real boolean math value
+        // converts the string "true"/"false" to a real boolean for comparison with the stored answer
         boolean playerAnswer = Boolean.parseBoolean(response.trim());
         
         // Checks if they match

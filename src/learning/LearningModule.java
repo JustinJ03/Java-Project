@@ -45,6 +45,7 @@ public class LearningModule implements IModule {
      */
     @Override
     public void loadContent() {
+        // Content is hardcoded here (no external file); each page has title, body, image path, and key fact.
         pages.clear();
 
         pages.add(new ContentPage(1,
@@ -147,6 +148,7 @@ public class LearningModule implements IModule {
      *
      * @param pageNumber 1-based page index
      */
+    // This method serves the console/IModule contract; the GUI uses getCurrentContentPage() + refresh() instead.
     @Override
     public void displayPage(int pageNumber) {
         if (pageNumber < 1 || pageNumber > pages.size()) {
@@ -156,8 +158,6 @@ public class LearningModule implements IModule {
         ContentPage page = pages.get(pageNumber - 1);
         page.markViewed();
         currentPage = pageNumber;
-        System.out.println(page.getFormattedContent());
-        System.out.println("Page " + currentPage + " of " + getTotalPages());
     }
 
     /** Advances to the next page; prints a message if already on the last page. */
@@ -193,7 +193,7 @@ public class LearningModule implements IModule {
     @Override
     public double getProgress() {
         if (pages.isEmpty()) return 0.0;
-        long viewed = pages.stream().filter(ContentPage::isViewed).count();
+        long viewed = pages.stream().filter(ContentPage::isViewed).count(); // stream filter counts only pages flagged as viewed
         return (viewed * 100.0) / pages.size();
     }
 
@@ -207,6 +207,8 @@ public class LearningModule implements IModule {
     /**
      * Called by LearningModulePanel when the user taps Finish on the last page.
      * Marks the module complete and ensures the last page is recorded as viewed.
+     * The last page is explicitly marked viewed here because the user may tap Finish
+     * without having reached it via nextPage() (e.g. direct jump or keyboard shortcut).
      */
     public void markFinished() {
         finishedByUser = true;

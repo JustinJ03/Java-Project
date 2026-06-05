@@ -62,7 +62,7 @@ public class GamificationModule extends JPanel implements IGamification {
     public void addPoints(int p) {
         points += p;
 
-        // Badge thresholds
+        // award milestone badges whenever points cross a threshold for the first time.
         if (points >= 10  && !hasBadge("First Steps"))
             badges.add(new Badge("First Steps",  "Earned your first 10 points!", "🌱"));
 
@@ -102,8 +102,8 @@ public class GamificationModule extends JPanel implements IGamification {
     // IGamification — leaderboard()
     // =========================================================
     /**
-     * Reads all saved scores via Member 4's IDataStorage, sorts them
-     * highest-first, and returns formatted strings.
+     * Reads all scores from scores.txt via DataManager, sorts highest-first, and
+     * formats each entry with a medal emoji for rank 1–3.
      * OOP: uses IDataStorage through polymorphism (DataManager implements IDataStorage).
      * OOP: demonstrates exception handling with DataNotFoundException.
      */
@@ -119,7 +119,7 @@ public class GamificationModule extends JPanel implements IGamification {
             return new ArrayList<>();
         }
 
-        // STEP 2: Sort by score (index 1) descending
+        // sort descending by score (index 1 in the CSV row).
         rows.sort((a, b) -> {
             try {
                 return Integer.parseInt(b[1]) - Integer.parseInt(a[1]);
@@ -143,8 +143,8 @@ public class GamificationModule extends JPanel implements IGamification {
     // AppModule — getView()  OVERRIDE
     // =========================================================
     /**
-     * Builds and returns the Gamification screen as a JComponent.
-     * OOP: overrides AppModule.getView() — inheritance + overriding.
+     * Builds and returns the Leaderboard and Badges screen as a JComponent.
+     * Called once by Main and added to the CardLayout.
      */
     public JComponent getView() {
         JPanel main = new JPanel(new BorderLayout(0, 10));
@@ -196,12 +196,14 @@ public class GamificationModule extends JPanel implements IGamification {
     // Public helper — called by QuizModule after quiz ends
     // =========================================================
     /**
-     * Evaluates quiz result and awards points + all applicable badges.
-     * Called by QuizModule immediately after the quiz ends.
-     *
-     * OOP: cross-module integration via dependency injection (QuizModule holds
-     * a reference set by Main.java). Uses DataManager (IDataStorage polymorphism)
-     * for milestone and leaderboard badge checks.
+     * Called by QuizModule the moment a quiz ends (dependency injection).
+     * Awards points based on score band plus a speed bonus (timeLeft / 6 points).
+     * Then checks five badge categories in order:
+     *   1. Score badges   : Perfect Score / High Achiever / Good Learner
+     *   2. Speed badges   : Lightning Fast (<=60s used) / Quick Thinker (<=150s) / Speed Runner (any time left)
+     *   3. First Step     : awarded on every first quiz completion
+     *   4. File-based     : Dedicated (3 quizzes), Quiz Master (5), Comeback (beat personal best), Top Scorer (all-time best)
+     * Calls onShow() at the end to refresh the leaderboard and badge display.
      *
      * @param playerName player name entered at quiz start (for file-based checks)
      * @param score      number of correct answers
@@ -214,11 +216,13 @@ public class GamificationModule extends JPanel implements IGamification {
         int    percent = (int) Math.round(pct);
 
         // ── Points by score band ───────────────────────────────────────────
+        // points awarded scale with score band.
         if (pct >= 100.0)      addPoints(50, "Perfect score!");
         else if (pct >= 80.0)  addPoints(30, "High achiever (80%+)");
         else if (pct >= 60.0)  addPoints(20, "Good result (60%+)");
         else                   addPoints(10, "Quiz completed");
 
+        // speed bonus: more time left = more points.
         if (timeLeft > 0)
             addPoints(timeLeft / 6, "Speed bonus (" + timeLeft + "s left)");
 
@@ -230,7 +234,7 @@ public class GamificationModule extends JPanel implements IGamification {
         else if (pct >= 60.0)
             awardBadge(new Badge("Good Learner", "Scored between 60% and 79%!", "📖"));
 
-        // ── Speed badges — tiered: only the best tier is awarded ───────────
+        // tiered speed badges — only the best tier is awarded based on time used.
         // 1. Define your total quiz time here to match your QuizModule
         int totalTime = 300; 
         
@@ -255,6 +259,7 @@ public class GamificationModule extends JPanel implements IGamification {
 
         // ── File-based badges (milestone + leaderboard) ───────────────────
         try {
+            // read score history from file to check milestone and leaderboard badges.
             List<String[]> allRows = dataManager.readScores();
 
             // Milestone: count quizzes by this player (current quiz is already saved)
@@ -262,6 +267,7 @@ public class GamificationModule extends JPanel implements IGamification {
                 .filter(r -> r.length > 0 && playerName.equalsIgnoreCase(r[0]))
                 .collect(Collectors.toList());
 
+            // count how many times this player has completed the quiz.
             int quizCount = playerRows.size();
             if (quizCount >= 3)
                 awardBadge(new Badge("Dedicated",   "Completed 3 quizzes!", "💪"));
@@ -270,7 +276,7 @@ public class GamificationModule extends JPanel implements IGamification {
 
             // Comeback: current score beats the player's previous personal best
             if (quizCount >= 2) {
-                // All entries except the most recently added one = previous history
+                // find the player's best score before this quiz (excluding the current entry).
                 int prevBest = playerRows.subList(0, quizCount - 1)
                     .stream()
                     .mapToInt(r -> parseSafe(r.length > 1 ? r[1] : "0"))
@@ -279,7 +285,7 @@ public class GamificationModule extends JPanel implements IGamification {
                     awardBadge(new Badge("Comeback", "Improved your personal best!", "🔄"));
             }
 
-            // Top Scorer: this score is the highest ever recorded across all players
+            // award Top Scorer if this score is the highest ever across all players.
             int allTimeBest = allRows.stream()
                 .mapToInt(r -> parseSafe(r.length > 1 ? r[1] : "0"))
                 .max().orElse(0);
@@ -293,7 +299,10 @@ public class GamificationModule extends JPanel implements IGamification {
         onShow(); // refresh leaderboard + badges display
     }
 
-    /** Safe integer parse — returns 0 on error (used for score fields from CSV). */
+    /**
+     * Parses a string to int; returns 0 on failure. Used to safely read score
+     * values from CSV rows that may be malformed.
+     */
     private int parseSafe(String s) {
         try { return Integer.parseInt(s.trim()); }
         catch (NumberFormatException e) { return 0; }
@@ -306,7 +315,10 @@ public class GamificationModule extends JPanel implements IGamification {
         return badges.stream().anyMatch(b -> b.getName().equals(name));
     }
 
-    /** Awards a badge only if not already held; shows a popup notification. */
+    /**
+     * Awards a badge only if the player does not already hold one with the same name.
+     * Shows a popup notification on award.
+     */
     private void awardBadge(Badge badge) {
         if (!hasBadge(badge.getName())) {
             badges.add(badge);
@@ -321,6 +333,10 @@ public class GamificationModule extends JPanel implements IGamification {
         }
     }
 
+    /**
+     * Clears and rebuilds the badge chip display. Each badge is shown as a
+     * coloured label chip with a tooltip.
+     */
     private void refreshBadgesPanel() {
         if (badgesPanel == null) return;
         badgesPanel.removeAll();

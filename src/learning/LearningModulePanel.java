@@ -123,7 +123,12 @@ public class LearningModulePanel extends JPanel {
     }
 
     // ── CENTER (scrollable content) ───────────────────────────────────────────
+    /**
+     * Builds the scrollable content area containing image, title, body text, and key fact.
+     * Uses GridBagLayout so all elements stretch to full width.
+     */
     JPanel makeCenter() {
+        // Overrides sizing so this panel always stretches to fill the scroll pane's viewport width.
         contentInner = new JPanel() {
             @Override
             public Dimension getPreferredSize() {
@@ -309,7 +314,10 @@ public class LearningModulePanel extends JPanel {
         txtBody.setMaximumSize(new Dimension(wrap, BODY_BOX_H));
     }
 
-    /** Keep title, body, and key fact within the visible panel width. */
+    /**
+     * Adjusts the preferred widths of title, body, and key-fact text areas to fit the current viewport.
+     * Must be called twice per refresh: once immediately, once after layout settles.
+     */
     void syncContentWidths() {
         int wrap = textWrapWidth();
         if (wrap <= 0) return;
@@ -342,7 +350,9 @@ public class LearningModulePanel extends JPanel {
 
         btnPrev = makeBtn("← Prev", false);
         btnNext = makeBtn("Next →", true);
+        // Prev: move model back one page, then redraw.
         btnPrev.addActionListener(e -> { module.prevPage(); refresh(); });
+        // Next: on last page triggers Finish flow; otherwise advances one page and redraws.
         btnNext.addActionListener(e -> {
             if (module.getCurrentPage() >= module.getTotalPages()) {
                 onFinishClick();
@@ -377,6 +387,13 @@ public class LearningModulePanel extends JPanel {
     }
 
     // ── REFRESH: update all widgets to match current page ─────────────────────
+    /**
+     * Redraws all content widgets to match the module's current page.
+     * Called after every navigation action (Prev, Next, Finish).
+     *
+     * Flow: get page → update header/progress → load image from filesystem
+     *       → set title/body/fact text → sync widths → update buttons + dots → scroll to top
+     */
     public void refresh() {
         ContentPage page = module.getCurrentContentPage();
         if (page == null) return;
@@ -394,8 +411,7 @@ public class LearningModulePanel extends JPanel {
         // Image
         lblImage.setIcon(null);  // clear before loading new image
         if (page.getImagePath() != null) {
-            // Use File instead of getResource() — images live on the filesystem,
-            // not on the classpath, so getResource() always returns null.
+            // Load image from filesystem path; getResource() cannot find files outside the classpath.
             java.io.File imgFile = new java.io.File(page.getImagePath());
             if (imgFile.exists()) {
                 ImageIcon icon = new ImageIcon(imgFile.getAbsolutePath());
@@ -441,6 +457,7 @@ public class LearningModulePanel extends JPanel {
         // Page indicator dots
         rebuildDots();
 
+        // Second pass: corrects widths after the layout engine has finalised the viewport size.
         SwingUtilities.invokeLater(() -> {
             syncContentWidths();
             if (contentScroll != null) {
@@ -451,6 +468,9 @@ public class LearningModulePanel extends JPanel {
         });
     }
 
+    /**
+     * Rebuilds the page indicator dots. The active page dot is wider (18px vs 7px) and filled green.
+     */
     void rebuildDots() {
         pnlDots.removeAll();
         int total   = module.getTotalPages();
@@ -465,6 +485,10 @@ public class LearningModulePanel extends JPanel {
         pnlDots.repaint();
     }
 
+    /**
+     * Updates Prev/Next button state and label. Prev is disabled on page 1.
+     * Next becomes 'Finish' on the last page and 'Finished ✓' after completion.
+     */
     void updateNavButtons() {
         boolean onLast = module.getCurrentPage() >= module.getTotalPages();
         btnPrev.setEnabled(module.getCurrentPage() > 1);  // disable on first page
@@ -489,6 +513,10 @@ public class LearningModulePanel extends JPanel {
         }
     }
 
+    /**
+     * Called when the user taps Finish on the last page. No-op if already finished.
+     * Marks the module complete and shows a congratulatory dialog.
+     */
     void onFinishClick() {
         if (module.isCompleted()) {
             return;  // already finished — no-op

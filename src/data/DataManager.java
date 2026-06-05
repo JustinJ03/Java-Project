@@ -42,12 +42,14 @@ public class DataManager implements IDataStorage {
             throw new InvalidScoreException(
                 "Score must be between 0 and 100, got: " + score);
         }
-        new File("data").mkdirs(); // ensure data/ directory exists
+        // create data/ directory on first run if it does not yet exist.
+        new File("data").mkdirs();
+        // open in append mode so existing scores are not overwritten.
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filePath, true))) {
             bw.write(user + "," + score + "," + System.currentTimeMillis());
             bw.newLine();
+        // log but do not crash — a failed write should not end the quiz session.
         } catch (IOException e) {
-            // Log but do not crash the app if the file write fails
             System.err.println("Warning: could not save score: " + e.getMessage());
         }
     }
@@ -81,13 +83,15 @@ public class DataManager implements IDataStorage {
     public List<String[]> readScores() throws DataNotFoundException {
         List<String[]> result = new ArrayList<>();
         File f = new File(filePath);
+        // scores file does not exist yet (no quiz has been completed) — return empty list, not an error.
         if (!f.exists()) {
-            return result; // no scores saved yet -- not an error
+            return result;
         }
         try (BufferedReader br = new BufferedReader(new FileReader(f))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (!line.trim().isEmpty()) {
+                    // each CSV line is: name,score,epochMilliseconds
                     result.add(line.split(","));
                 }
             }

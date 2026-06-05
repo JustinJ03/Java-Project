@@ -9,6 +9,7 @@ public class DataNotFoundException extends Exception {
     public DataNotFoundException(String message) {
         super(message);
     }
+    // wraps the root IOException so callers know whether the file is missing or unreadable.
     public DataNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }

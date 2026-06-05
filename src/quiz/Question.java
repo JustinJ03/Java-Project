@@ -3,24 +3,21 @@ package quiz;
 import javax.swing.JComponent;
 
 /**
- * TASK: Member 2 - Abstract Question Base Class
+ * Abstract base class for all question types (MCQ, True/False). Declares two abstract
+ * methods — checkAnswer and render — that each subclass must implement differently;
+ * this is the core of the polymorphism pattern used in QuizModule, which iterates over
+ * a {@code List<Question>} and lets the JVM dispatch to the correct subclass at runtime.
  *
- * PURPOSE:
- * Abstract superclass for all question types (MCQ, True/False).
- * Defines the common contract: every question has a prompt, can check
- * an answer, and can render itself as a Swing component.
- *
- * OOP CONCEPTS TO DEMONSTRATE:
+ * OOP CONCEPTS:
  * - Abstraction   : abstract class with abstract methods
  * - Inheritance   : MCQQuestion and TrueFalseQuestion both extend this
- * - Polymorphism  : QuizModule loops over List<Question>, calling
- * checkAnswer() and render() on each -- the JVM
- * dispatches to the correct subclass at runtime.
+ * - Polymorphism  : QuizModule calls checkAnswer() and render() on each Question
+ *                   without knowing the concrete type
  */
 public abstract class Question {
 
     // === FIELD ===
-    protected final String prompt; // the question text shown to the player
+    protected final String prompt; // the question text shown to the player; set once at construction
 
     // === CONSTRUCTOR ===
     protected Question(String prompt) {

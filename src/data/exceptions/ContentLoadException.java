@@ -20,6 +20,7 @@ public class ContentLoadException extends Exception {
         super(message);
     }
 
+    // wraps the root cause (e.g. IOException) so callers can inspect the original error.
     /** Two-arg: wraps the underlying IOException or other cause. */
     public ContentLoadException(String message, Throwable cause) {
         super(message, cause);

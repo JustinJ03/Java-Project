@@ -14,11 +14,15 @@ public class ContentPage {
     private String bodyText;    // main educational paragraph(s)
     private String imagePath;   // relative path to the image (null if no image)
     private String keyFact;     // highlighted takeaway fact (null if none)
-    private boolean viewed;     // true once the user has opened this page
+    private boolean viewed;     // defaults to false; set true when the user navigates to this page
 
     // ── Constructors ──────────────────────────────────────────────────────────
 
-    /** Full constructor — all fields provided by the caller. */
+    /**
+     * Full constructor — all fields provided by the caller.
+     * Two overloaded variants exist for pages that omit the key fact or both
+     * the image and key fact; they delegate here with null for the missing fields.
+     */
     public ContentPage(int pageNumber, String title, String bodyText,
                        String imagePath, String keyFact) {
         this.pageNumber = pageNumber;
@@ -50,19 +54,6 @@ public class ContentPage {
 
     /** Returns true if the user has opened this page at least once. */
     public boolean isViewed() { return viewed; }
-
-    /**
-     * Returns a debug-friendly multi-line string of the page content.
-     * Used by LearningModule.displayPage() for console output.
-     */
-    public String getFormattedContent() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("=== ").append(title).append(" ===\n\n");
-        sb.append(bodyText).append("\n");
-        if (keyFact != null && !keyFact.isEmpty())
-            sb.append("\nKey Fact: ").append(keyFact).append("\n");
-        return sb.toString();
-    }
 
     // ── Getters ───────────────────────────────────────────────────────────────
     public int    getPageNumber() { return pageNumber; }

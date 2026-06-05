@@ -1,15 +1,9 @@
 package gamification;
 
 /**
- * Badge.java
- * Represents a reward badge earned by the player in the EduSDG application.
- *
- * Badges are awarded when the player reaches point thresholds or completes
- * quiz milestones inside GamificationModule.
- *
- * OOP CONCEPTS DEMONSTRATED:
- *   - Constructor overloading: three constructors, each delegating upward
- *     to the full three-argument constructor.
+ * Immutable reward badge awarded to the player. The two-arg constructor delegates
+ * to the three-arg constructor (constructor overloading). equals() and hashCode()
+ * compare by name so GamificationModule can detect duplicates.
  *
  * Creator  : Dhiaurrahman Bin Muhammad Dino (102521)
  */
@@ -44,6 +38,7 @@ public class Badge {
 
     // === OVERRIDES ===
 
+    // name-based equality lets hasBadge() prevent the same badge being awarded twice.
     /** Two badges are equal if they share the same name (case-insensitive).
      *  Used by hasBadge() in GamificationModule to prevent duplicates. */
     @Override

@@ -28,6 +28,7 @@ public class UserProfile {
      * @param name the player's name (cannot be null)
      */
     public UserProfile(String name) {
+        // default to 'Guest' if a null or blank name is supplied.
         this.name         = (name != null && !name.trim().isEmpty()) ? name.trim() : "Guest";
         this.lastScore    = 0;
         this.bestScore    = 0;
@@ -49,6 +50,7 @@ public class UserProfile {
     public void recordScore(int score) {
         this.lastScore = score;
         this.quizzesTaken++;
+        // raise bestScore only when the new score exceeds the previous best.
         if (score > this.bestScore) {
             this.bestScore = score;
         }

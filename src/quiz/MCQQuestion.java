@@ -5,6 +5,11 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.List;
 
+/**
+ * Multiple-choice question. Renders as a vertical list of JRadioButtons. selectedAnswer
+ * is updated by the ActionListener attached to each radio button; QuizModule reads it
+ * via getSelectedAnswer() before calling checkAnswer().
+ */
 public class MCQQuestion extends Question {
 
     // These variables store the choices (options) and which one is correct
@@ -25,7 +30,10 @@ public class MCQQuestion extends Question {
         return options; 
     }
 
-    // This method checks if the player picked the right answer
+    /**
+     * Compares the response to options.get(correctIndex), case-insensitive.
+     * Returns false immediately for blank/null input to avoid an NPE on trim().
+     */
     @Override
     public boolean checkAnswer(String response) {
         // If they didn't pick anything, it's automatically wrong
@@ -55,7 +63,7 @@ public class MCQQuestion extends Question {
         panel.add(promptLabel);
         panel.add(Box.createVerticalStrut(10)); // Adds empty space below the text
 
-        // ButtonGroup makes sure the user can only select one circle at a time
+        // ButtonGroup ensures only one radio button can be selected at a time
         ButtonGroup group = new ButtonGroup();
         
         // Loop through every option (A, B, C, D) and make a radio button for it
@@ -68,7 +76,7 @@ public class MCQQuestion extends Question {
             rb.setCursor(new Cursor(Cursor.HAND_CURSOR)); // Changes mouse to a pointer hand
             rb.setBorder(new EmptyBorder(5, 5, 5, 5));
             
-            // When clicked, save this option as the selected answer
+            // capture which option the user clicked — read later by QuizModule
             rb.addActionListener(e -> selectedAnswer = option);
             
             group.add(rb);

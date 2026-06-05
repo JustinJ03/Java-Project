@@ -19,13 +19,13 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * QuizModule.java
- * Presents the SDG 4 quiz: loads questions from questions.txt, displays them
- * one at a time with a 120-second countdown timer, checks answers, saves the
- * score via DataManager, and notifies GamificationModule when the quiz ends.
+ * Presents the SDG 4 quiz: loads questions from questions.txt, displays them one at a
+ * time with a 300-second countdown timer, checks answers, saves the score to
+ * data/scores.txt via DataManager (Member 4), and notifies GamificationModule to award
+ * points and badges the moment the quiz ends (Member 3).
  *
  * Creator : Vince Adhar Anak Sekelie (106653)
- * Tester  : 
+ * Tester  :
  */
 public class QuizModule extends JPanel implements IQuiz {
 
@@ -36,7 +36,7 @@ public class QuizModule extends JPanel implements IQuiz {
     private boolean isAnswerSubmitted        = false;
     private String playerName               = "Player"; // set at quiz start via dialog
 
-    // ── 120-second countdown timer ────────────────────────────────────────────
+    // ── 300-second countdown timer ─────────────────────────────────────────────
     private static final int QUIZ_SECONDS    = 300;
     private javax.swing.Timer quizTimer;
     private int    remainingSeconds          = QUIZ_SECONDS;
@@ -148,6 +148,7 @@ public class QuizModule extends JPanel implements IQuiz {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty() || line.startsWith("#")) continue;
+                // questions.txt format: MCQ|prompt|opt1;opt2;opt3;opt4|correctIndex  or  TF|prompt||true
                 String[] parts = line.split("\\|");
                 String type = parts[0].trim();
                 if (type.equals("MCQ")) {
@@ -232,7 +233,10 @@ public class QuizModule extends JPanel implements IQuiz {
         questionContainer.repaint();
     }
 
-    /** Prompt for name, reset state, shuffle, start timer, show first question. */
+    /**
+     * Prompts the player for their name, resets all counters, shuffles the question list,
+     * and starts the timer before displaying the first question.
+     */
     private void startQuiz() {
         // Ask player name — score saved to data/scores.txt via DataManager (Member 4)
         String name = JOptionPane.showInputDialog(
@@ -261,7 +265,10 @@ public class QuizModule extends JPanel implements IQuiz {
 
     // ── Timer logic ───────────────────────────────────────────────────────────
 
-    /** Starts the 120-second countdown. Auto-finishes when it hits 0. */
+    /**
+     * Starts a 1-second Swing timer countdown from QUIZ_SECONDS.
+     * Auto-calls finishQuiz() when it reaches zero.
+     */
     private void startTimer() {
         stopTimer(); // ensure no old timer running
         updateTimerDisplay();
@@ -276,14 +283,18 @@ public class QuizModule extends JPanel implements IQuiz {
         quizTimer.start();
     }
 
-    /** Stops the countdown. Safe to call even if timer is null/stopped. */
+    /**
+     * Stops the countdown timer. Safe to call even if the timer is already stopped or null.
+     */
     private void stopTimer() {
         if (quizTimer != null && quizTimer.isRunning()) {
             quizTimer.stop();
         }
     }
 
-    /** Refreshes the timer label; turns red when under 20 seconds. */
+    /**
+     * Refreshes the timer label. Turns red when under 20 seconds to signal urgency.
+     */
     private void updateTimerDisplay() {
         int m = remainingSeconds / 60;
         int s = remainingSeconds % 60;
@@ -295,6 +306,10 @@ public class QuizModule extends JPanel implements IQuiz {
 
     // ── Question display ──────────────────────────────────────────────────────
 
+    /**
+     * Clears the question container and renders the question at the given index using
+     * question.render() (polymorphism) — the JVM dispatches to MCQQuestion or TrueFalseQuestion.
+     */
     private void showQuestion(int index) {
         questionContainer.removeAll();
         isAnswerSubmitted = false;
@@ -312,7 +327,11 @@ public class QuizModule extends JPanel implements IQuiz {
 
     // ── Answer handling ───────────────────────────────────────────────────────
 
-    /** Called every time the action button is clicked (Submit / Next / Finish). */
+    /**
+     * Two-phase state machine driven by isAnswerSubmitted:
+     * Phase 1 (false): validates the selected answer, checks correctness, shows feedback.
+     * Phase 2 (true): advances to the next question or calls finishQuiz() on the last one.
+     */
     private void handleAction() {
         if (!isAnswerSubmitted) {
             // — Submission step —
@@ -321,7 +340,7 @@ public class QuizModule extends JPanel implements IQuiz {
             if (q instanceof MCQQuestion)       answer = ((MCQQuestion) q).getSelectedAnswer();
             else if (q instanceof TrueFalseQuestion) answer = ((TrueFalseQuestion) q).getSelectedAnswer();
 
-            // Guard: no answer selected
+            // block submission if no option was selected
             if (answer == null || answer.trim().isEmpty()) {
                 JOptionPane.showMessageDialog(
                         SwingUtilities.getWindowAncestor(this),
@@ -332,6 +351,7 @@ public class QuizModule extends JPanel implements IQuiz {
             }
 
             if (q.checkAnswer(answer)) {
+                // tally correct answers for the final score
                 correctCount++;
                 feedbackLabel.setForeground(new Color(22, 163, 90));
                 feedbackLabel.setText("✔ Correct!");
@@ -356,21 +376,24 @@ public class QuizModule extends JPanel implements IQuiz {
 
     // ── Results screen ────────────────────────────────────────────────────────
 
-    /** Stops the timer, saves the score, notifies gamification, shows results. */
+    /**
+     * Ends the quiz. In order: stops timer, saves score to scores.txt via DataManager,
+     * notifies GamificationModule to award points/badges, then builds and shows the results screen.
+     */
     private void finishQuiz() {
         stopTimer();
         int timeLeft = remainingSeconds; // capture before reset
         int percent  = scorePercent();
         String feedback = motivationalMessage(percent);
 
-        // Persist score — Member 4 integration
+        // persist score — Member 4's DataManager writes to data/scores.txt
         try {
             new DataManager("data/scores.txt").saveScore(playerName, percent);
         } catch (InvalidScoreException e) {
             System.err.println("Score save failed: " + e.getMessage());
         }
 
-        // Notify gamification so points + badges update immediately — Member 3 integration
+        // trigger badge/points update immediately — Member 3's GamificationModule
         if (gamifModule != null) {
             gamifModule.onQuizComplete(playerName, correctCount, questions.size(), timeLeft);
         }
