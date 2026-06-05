@@ -1,5 +1,7 @@
 package quiz;
-
+/**
+ * Creator : Vince Adhar Anak Sekelie (106653)
+ */
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
