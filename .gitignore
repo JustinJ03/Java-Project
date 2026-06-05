@@ -1,5 +1,6 @@
 # --- AI usage traces (do not share) ---
 .claude/
+data/
 docs/superpowers/
 CLAUDE.md
 AGENTS.md
@@ -17,7 +18,6 @@ credentials*
 # --- Build & runtime output ---
 out/
 *.class
-/data/
 sources.txt
 derby.log
 *.log
