@@ -1,5 +1,13 @@
 package quiz;
-
+/**
+ * Presents the SDG 4 quiz: loads questions from questions.txt, displays them one at a
+ * time with a 300-second countdown timer, checks answers, saves the score to
+ * data/scores.txt via DataManager (Member 4), and notifies GamificationModule to award
+ * points and badges the moment the quiz ends (Member 3).
+ *
+ * Creator : Vince Adhar Anak Sekelie (106653)
+ * Tester  :
+ */
 import data.DataManager;
 import data.exceptions.ContentLoadException;
 import data.exceptions.InvalidScoreException;
