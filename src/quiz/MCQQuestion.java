@@ -1,8 +1,5 @@
 package quiz;
 
-/**
- * Creator : Vince Adhar Anak Sekelie (106653)
- */
 import java.awt.*;
 import java.util.List;
 import javax.swing.*;
