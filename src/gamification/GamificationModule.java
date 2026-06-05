@@ -196,17 +196,6 @@ public class GamificationModule extends JPanel implements IGamification {
     /**
      * Called by QuizModule the moment a quiz ends (dependency injection).
      * Awards points based on score band plus a speed bonus (timeLeft / 6 points).
-     * Then checks five badge categories in order:
-     *   1. Score badges   : Perfect Score / High Achiever / Good Learner
-     *   2. Speed badges   : Lightning Fast (<=60s used) / Quick Thinker (<=150s) / Speed Runner (any time left)
-     *   3. First Step     : awarded on every first quiz completion
-     *   4. File-based     : Dedicated (3 quizzes), Quiz Master (5), Comeback (beat personal best), Top Scorer (all-time best)
-     * Calls onShow() at the end to refresh the leaderboard and badge display.
-     *
-     * @param playerName player name entered at quiz start (for file-based checks)
-     * @param score      number of correct answers
-     * @param total      total number of questions
-     * @param timeLeft   seconds remaining when quiz ended (0 = timed out)
      */
     public void onQuizComplete(String playerName, int score, int total, int timeLeft) {
         if (total == 0) return;
