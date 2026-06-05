@@ -11,6 +11,7 @@ import java.util.List;
  * Tracks the current page and the user's overall progress percentage.
  *
  * Creator  : Adriana Umang Anak Nawang (103088)
+ * Tester/Reviewer : Justin Joel anak Juni (104607)
  */
 public class LearningModule implements IModule {
 

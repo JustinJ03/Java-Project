@@ -529,7 +529,6 @@ public class LearningModulePanel extends JPanel {
             "You have completed the Learning Module!\n"
             + "Head to the Quiz tab to test your knowledge.",
             "Module Complete!", JOptionPane.INFORMATION_MESSAGE);
-        // TODO: gamifModule.awardBadge("Learning Champion");
     }
 
     public LearningModule getModule() { return module; }

@@ -5,6 +5,7 @@ package learning;
  * Each page holds a title, body text, optional image, and an optional key fact.
  *
  * Creator : Adriana Umang Anak Nawang (103088)
+ * Tester/Reviewer : Justin Joel anak Juni (104607)
  */
 public class ContentPage {
 

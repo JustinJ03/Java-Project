@@ -6,6 +6,7 @@ package gamification;
  * compare by name so GamificationModule can detect duplicates.
  *
  * Creator  : Dhiaurrahman Bin Muhammad Dino (102521)
+ * Tester/Reviewer : Justin Joel anak Juni (104607)
  */
 public class Badge {
 

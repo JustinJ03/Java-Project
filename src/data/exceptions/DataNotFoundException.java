@@ -1,9 +1,11 @@
 package data.exceptions;
 
 /**
+ * Creator : Justin Joel anak Juni (104607)
+ * Tester/Reviewer  : Vince Adhar Anak Sekelie (106653)
+ * 
  * Thrown by DataManager when saved data cannot be located or read from disk.
  *
- * Member 4 -- this file is complete.
  */
 public class DataNotFoundException extends Exception {
     public DataNotFoundException(String message) {

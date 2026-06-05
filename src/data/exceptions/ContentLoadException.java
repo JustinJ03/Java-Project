@@ -1,6 +1,9 @@
 package data.exceptions;
 
 /**
+ * Creator : Justin Joel anak Juni (104607)
+ * Tester/Reviewer  : Adriana Umang Anak Nawang (103088)
+ * 
  * ContentLoadException.java
  * Thrown when a resource file (questions.txt, content files, etc.) cannot be loaded.
  *
@@ -10,8 +13,6 @@ package data.exceptions;
  *
  * OOP: custom checked exception; extends Exception for compile-time enforcement.
  *
- * Creator : Member 4
- * Tester  : Adriana Umang Anak Nawang (103088)
  */
 public class ContentLoadException extends Exception {
 

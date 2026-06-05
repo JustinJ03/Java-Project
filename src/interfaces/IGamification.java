@@ -1,9 +1,12 @@
 package interfaces;
 
-import java.util.List;
 import gamification.Badge;
+import java.util.List;
 
 /**
+ * Creator  : Dhiaurrahman Bin Muhammad Dino (102521)
+ * Tester/Reviewer : Justin Joel anak Juni (104607)
+ * 
  * Implements the gamification system. Defines point tracking, badge management,
  * and leaderboard retrieval. Implemented by GamificationModule.
  * The two addPoints signatures demonstrate method overloading.
